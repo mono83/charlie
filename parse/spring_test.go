@@ -2,9 +2,10 @@ package parse
 
 import (
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/mono83/charlie"
 	"time"
+
+	"github.com/mono83/charlie"
+	"github.com/stretchr/testify/assert"
 )
 
 var springLog = `
@@ -61,11 +62,11 @@ Changes in version 2.1.0.RC2 (2018-08-20)
 * DATACMNS-1358 - Release 2.1 RC2 (Lovelace).
 * DATACMNS-1351 - Fix typos in reference documentation.`
 
-func TestParseSpringChangelog(t *testing.T) {
-	logs, err := ParseSpringChangelog(springLog)
+func TestSpringChangelog(t *testing.T) {
+	logs, err := SpringChangelog(springLog)
 	if assert.NoError(t, err) {
 		assert.Len(t, logs, 3)
-		assert.Equal(t, charlie.Release{Major: "2", Minor: "0", Patch: "10", Version: "RELEASE"}, logs[0].Release)
+		assert.Equal(t, charlie.Version{Major: "2", Minor: "0", Patch: "10", Label: "RELEASE"}, logs[0].Version)
 		assert.Equal(t, time.Date(2018, time.September, 10, 0, 0, 0, 0, time.UTC), logs[0].Date)
 
 		if assert.Len(t, logs[0].Issues, 18) {

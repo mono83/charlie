@@ -2,16 +2,10 @@ package charlie
 
 import "time"
 
+// Release describes whole release data - the name itself,
+// release date and issues
 type Release struct {
-	Major   string
-	Minor   string
-	Version string
-	Patch   string
-	Build   string
-}
-
-type ChangeLog struct {
-	Release Release
-	Issues  []Issue
-	Date    time.Time
+	Version
+	Issues []Issue
+	Date   time.Time
 }

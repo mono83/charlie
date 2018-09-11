@@ -1,22 +1,24 @@
 package parse
 
 import (
-	"github.com/mono83/charlie"
+	"fmt"
 	"regexp"
 	"strings"
-	"fmt"
 	"time"
+
+	"github.com/mono83/charlie"
 )
 
 var springVersionPattern = regexp.MustCompile(`Changes in version ([\w\d.]+) \(([\w\-]+)\)`)
 var springIssuePattern = regexp.MustCompile(`^\* ([\w\d\-]+) - (.*)$`)
 
-func ParseSpringChangelog(data string) ([]charlie.ChangeLog, error) {
-	var result []charlie.ChangeLog
+// SpringChangelog parses Spring framework changelog
+func SpringChangelog(data string) ([]charlie.Release, error) {
+	var result []charlie.Release
 
-	var current *charlie.ChangeLog
+	var current *charlie.Release
 	for i, line := range strings.Split(data, "\n") {
-		line = strings.TrimSpace(line)
+		line = Trim(line)
 
 		if len(line) == 0 {
 			// Empty string
@@ -37,7 +39,7 @@ func ParseSpringChangelog(data string) ([]charlie.ChangeLog, error) {
 			chunks := springVersionPattern.FindStringSubmatch(line)
 
 			// Parsing release
-			r, ok := ParseRelease(chunks[1])
+			v, ok := Version(chunks[1])
 			if !ok {
 				return nil, fmt.Errorf(`unable to parse release signature "%s" at line %d`, chunks[1], i+1)
 			}
@@ -53,7 +55,7 @@ func ParseSpringChangelog(data string) ([]charlie.ChangeLog, error) {
 				result = append(result, *current)
 			}
 
-			current = &charlie.ChangeLog{Release: *r, Date: t.UTC()}
+			current = &charlie.Release{Version: *v, Date: t.UTC()}
 
 			continue
 		}
