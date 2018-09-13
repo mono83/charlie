@@ -70,13 +70,13 @@ func TestSpringChangelog(t *testing.T) {
 		assert.Equal(t, time.Date(2018, time.September, 10, 0, 0, 0, 0, time.UTC), logs[0].Date)
 
 		if assert.Len(t, logs[0].Issues, 18) {
-			assert.Equal(t, charlie.Notice, logs[0].Issues[1].Type)
+			assert.Equal(t, charlie.Info, logs[0].Issues[1].Type)
 			assert.Equal(t, "DATACMNS-1387", logs[0].Issues[1].ID)
 			assert.Equal(t, "Wrong description for CurrentDateTimeProvider.", logs[0].Issues[1].Message)
 		}
 		assert.Len(t, logs[1].Issues, 6)
 		if assert.Len(t, logs[2].Issues, 15) {
-			assert.Equal(t, charlie.Notice, logs[2].Issues[14].Type)
+			assert.Equal(t, charlie.Info, logs[2].Issues[14].Type)
 			assert.Equal(t, "DATACMNS-1351", logs[2].Issues[14].ID)
 			assert.Equal(t, "Fix typos in reference documentation.", logs[2].Issues[14].Message)
 		}
