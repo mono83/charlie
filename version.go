@@ -25,3 +25,12 @@ func (v Version) IsStable() bool {
 
 	return true
 }
+
+// IsEqual returns true if version is equally
+func (v Version) IsEqual(source Version) bool {
+	return v.Major == source.Major &&
+		v.Minor == source.Minor &&
+		v.Patch == source.Patch &&
+		v.Label == source.Label &&
+		v.Build == source.Build
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/mono83/charlie"
 )
 
-var versionParseSemver = regexp.MustCompile(`^v?(\d+)\.(\d+)(.(\d+))?([.\-]([\w\d\-.]+))?$`)
+var versionParseSemver = regexp.MustCompile(`v?(\d+)\.(\d+)(.(\d+))?([.\-]([\w\d\-.]+))?`)
 
 // Version parses release signature from string
 func Version(src string) (*charlie.Version, bool) {
