@@ -1,6 +1,9 @@
 package charlie
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // Version describes only release version
 type Version struct {
@@ -24,4 +27,10 @@ func (v Version) IsStable() bool {
 	}
 
 	return true
+}
+
+// String returns string representation of version
+func (v Version) String() string {
+	// TODO make more convenient method implementation
+	return fmt.Sprint(v.Major + "." + v.Minor + v.Patch + "-" + v.Label + "." + v.Build)
 }

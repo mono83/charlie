@@ -15,3 +15,25 @@ const (
 	Performance Type = 7
 	Unreleased  Type = 127
 )
+
+// String returns string representation of issue type
+func (t Type) String() string {
+	switch t {
+	case Info:
+		return "Info"
+	case Added:
+		return "Added"
+	case Changed:
+		return "Changed"
+	case Deprecated:
+		return "Deprecated"
+	case Fixed:
+		return "Fixed"
+	case Security:
+		return "Security"
+	case Performance:
+		return "Performance"
+	default:
+		return "Unknown"
+	}
+}
