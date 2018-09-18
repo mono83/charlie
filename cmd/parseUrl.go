@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var parseUrlTitle string
+var parseURLTitle string
 
-var parseUrl = &cobra.Command{
+var parseURL = &cobra.Command{
 	Use:   "url <parser name> <file name>",
 	Short: "Parses URL using requested parser",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -45,7 +45,7 @@ var parseUrl = &cobra.Command{
 		}
 
 		// Parsing
-		releases, err := p(parseUrlTitle, string(bts))
+		releases, err := p(parseURLTitle, string(bts))
 		if err != nil {
 			return err
 		}
@@ -57,5 +57,5 @@ var parseUrl = &cobra.Command{
 }
 
 func init() {
-	parseUrl.Flags().StringVarP(&parseUrlTitle, "title", "t", "", "")
+	parseURL.Flags().StringVarP(&parseURLTitle, "title", "t", "", "")
 }

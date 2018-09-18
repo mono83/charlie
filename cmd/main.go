@@ -13,6 +13,6 @@ func init() {
 	Main.AddCommand(
 		parsersList,
 		parseFile,
-		parseUrl,
+		parseURL,
 	)
 }
