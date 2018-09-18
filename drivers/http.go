@@ -1,7 +1,9 @@
 package drivers
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/mono83/xray"
 	"github.com/mono83/xray/args"
 	"io/ioutil"
@@ -49,4 +51,29 @@ func HTTPGet(url string) (int, string, error) {
 	log.Info("HTTP GET :url done in :delta", args.Delta(time.Now().Sub(before)))
 
 	return res.StatusCode, string(bts), nil
+}
+
+// Only200 takes result from HTTP get and returns error
+// it HTTP status code not 200
+// If there were error already, it returns existing one
+func Only200(code int, body string, err error) (string, error) {
+	if err != nil {
+		return body, err
+	}
+	if code != 200 {
+		return body, fmt.Errorf("expected HTTP 200 but got %d", code)
+	}
+
+	return body, err
+}
+
+// IntoJSON builds and returns lambda, that will decode from JSON
+// results, obtained from functions like Only200
+func IntoJSON(target interface{}) func(string, error) error {
+	return func(body string, err error) error {
+		if err != nil {
+			return err
+		}
+		return json.Unmarshal([]byte(body), target)
+	}
 }
