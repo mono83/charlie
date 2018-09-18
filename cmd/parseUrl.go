@@ -3,9 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
+	"github.com/mono83/charlie/drivers"
 	"github.com/mono83/charlie/parse/parsers"
 	"github.com/spf13/cobra"
 )
@@ -27,21 +25,12 @@ var parseURL = &cobra.Command{
 		}
 
 		// Making request
-		// TODO make custom implementation of HTTP client
-		// with dedicated user-agent and logging
-		resp, err := http.Get(args[1])
+		code, bts, err := drivers.HTTPGet(args[1])
 		if err != nil {
 			return err
 		}
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("expected HTTP 200 but got %d", resp.StatusCode)
-		}
-
-		// Reading contents
-		bts, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
+		if code != 200 {
+			return fmt.Errorf("expected HTTP 200 but got %d", code)
 		}
 
 		// Parsing
