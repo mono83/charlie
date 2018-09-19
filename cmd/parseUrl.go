@@ -11,7 +11,7 @@ import (
 var parseURLTitle string
 
 var parseURL = &cobra.Command{
-	Use:   "url <parser name> <file name>",
+	Use:   "url <parser name> <url>",
 	Short: "Parses URL using requested parser",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
