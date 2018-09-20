@@ -13,7 +13,7 @@ var springVersionPattern = regexp.MustCompile(`Changes in version ([\w\d.]+) \((
 var springIssuePattern = regexp.MustCompile(`^\* ([\w\d\-]+) - (.*)$`)
 
 // SpringChangelog parses Spring framework changelog
-func SpringChangelog(data string) ([]charlie.Release, error) {
+func SpringChangelog(_, data string) ([]charlie.Release, error) {
 	var result []charlie.Release
 
 	var current *charlie.Release
@@ -67,10 +67,10 @@ func SpringChangelog(data string) ([]charlie.Release, error) {
 
 			chunks := springIssuePattern.FindStringSubmatch(line)
 
-			current.Issues = append(current.Issues, charlie.Issue{
-				ID:      chunks[1],
-				Message: chunks[2],
-			})
+			issue := Issue(chunks[2], nil)
+			issue.ID = chunks[1]
+
+			current.Issues = append(current.Issues, issue)
 		}
 	}
 
