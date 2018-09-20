@@ -1,26 +1,23 @@
 package parse
 
 import (
-	"fmt"
 	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/parse/date"
 	"github.com/mono83/charlie/parse/markdown"
+	"github.com/mono83/charlie/parse/semantic"
 	"github.com/pkg/errors"
-	"regexp"
 	"strings"
-	"time"
 )
 
-var reactSemanticRoute = ContainsAny{
+var reactSemanticRoute = semantic.ContainsAny{
 	Or:   []string{"fix", "bug"},
 	Exit: charlie.Fixed,
-	Next: &ContainsAny{
+	Next: &semantic.ContainsAny{
 		Or:   []string{"add", "improve", "provide"},
 		Exit: charlie.Performance,
-		Next: &AlwaysTrue{Exit: charlie.Info},
+		Next: &semantic.AlwaysTrue{Exit: charlie.Info},
 	},
 }
-
-var reactReleaseDatePattern = regexp.MustCompile(`\(([\w\d, ]+)\)`)
 
 // ReactChangelog Parses react change logs
 func ReactChangelog(data string) ([]charlie.Release, error) {
@@ -44,7 +41,7 @@ func ReactChangelog(data string) ([]charlie.Release, error) {
 			if versionDetected {
 				lastRelease.Version = *version
 			}
-			if t, err := detectTime(line.Headers[0]); err == nil {
+			if t, parsed, _ := date.ParseTime(line.Headers[0]); parsed {
 				lastRelease.Date = *t
 			}
 		} else if versionDetected && !version.IsEqual(lastRelease.Version) {
@@ -52,14 +49,14 @@ func ReactChangelog(data string) ([]charlie.Release, error) {
 			releases = append(releases, *lastRelease)
 			// New release
 			lastRelease = &charlie.Release{Version: *version}
-			if t, err := detectTime(line.Headers[0]); err == nil {
+			if t, parsed, _ := date.ParseTime(line.Headers[0]); parsed {
 				lastRelease.Date = *t
 			}
 		}
 
 		// Detecting type
 		var issueType charlie.Type
-		if t, err := SemanticWalk(reactSemanticRoute, line.Value); err != nil || t == nil {
+		if t, detected := semantic.Walk(reactSemanticRoute, line.Value); !detected || t == nil {
 			issueType = charlie.Info // By default
 		} else {
 			issueType = *t
@@ -82,17 +79,4 @@ func ReactChangelog(data string) ([]charlie.Release, error) {
 	releases = append(releases, *lastRelease)
 
 	return releases, nil
-}
-
-func detectTime(val string) (*time.Time, error) {
-	if reactReleaseDatePattern.MatchString(val) {
-		chunks := reactReleaseDatePattern.FindStringSubmatch(val)
-		t, err := time.Parse("January 2, 2006", chunks[1])
-		if err != nil {
-			return nil, fmt.Errorf("time parse error - %s", err.Error())
-		}
-		return &t, nil
-	}
-
-	return nil, errors.New("undefined time pattern")
 }

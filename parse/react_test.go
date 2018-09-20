@@ -32,7 +32,7 @@ func TestReactChangelog(t *testing.T) {
 
 		date, err := time.Parse("2006-01-02", "2018-09-13")
 		assert.NoError(t, err)
-		assert.True(t, releases[0].Date.Equal(date))
+		assert.Equal(t, date, releases[0].Date)
 
 		// Next release
 		assert.Equal(t, charlie.Version{Major: "16", Minor: "4", Patch: "2", Label: ""}, releases[1].Version)

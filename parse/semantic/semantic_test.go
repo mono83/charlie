@@ -1,4 +1,4 @@
-package parse
+package semantic
 
 import (
 	"github.com/mono83/charlie"
@@ -8,7 +8,7 @@ import (
 
 var semanticDataProvider = []struct {
 	Data     string
-	Route    SemanticRoute
+	Route    Route
 	Expected charlie.Type
 }{
 	{
@@ -47,9 +47,9 @@ var semanticDataProvider = []struct {
 func TestSemantic(t *testing.T) {
 	for _, data := range semanticDataProvider {
 		t.Run(data.Data, func(t *testing.T) {
-			res, err := SemanticWalk(data.Route, data.Data)
+			res, detected := Walk(data.Route, data.Data)
 
-			if assert.NoError(t, err) {
+			if assert.True(t, detected) {
 				assert.Equal(t, data.Expected, *res)
 			}
 		})
