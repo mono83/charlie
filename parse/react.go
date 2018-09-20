@@ -20,7 +20,7 @@ var reactSemanticRoute = semantic.ContainsAny{
 }
 
 // ReactChangelog Parses react change logs
-func ReactChangelog(data string) ([]charlie.Release, error) {
+func ReactChangelog(_, data string) ([]charlie.Release, error) {
 	lines := markdown.ToListLines(data)
 
 	if len(lines) == 0 {
@@ -44,7 +44,7 @@ func ReactChangelog(data string) ([]charlie.Release, error) {
 			if t, parsed, _ := date.ParseTime(line.Headers[0]); parsed {
 				lastRelease.Date = *t
 			}
-		} else if versionDetected && !version.IsEqual(lastRelease.Version) {
+		} else if versionDetected && *version != lastRelease.Version {
 			// If new release detected while parsing lines
 			releases = append(releases, *lastRelease)
 			// New release

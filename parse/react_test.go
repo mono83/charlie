@@ -7,11 +7,35 @@ import (
 	"time"
 )
 
-var reactLog = "## 16.5.1 (September 13, 2018)\r\n\r\n### React\r\n\r\n* Improve the warning when `React.forwardRef` receives an unexpected number of arguments. ([@andresroberto](https://github.com/andresroberto) in [#13636](https://github.com/facebook/react/issues/13636))\r\n\r\n### React DOM\r\n\r\n* Fix a regression in unstable exports used by React Native Web. ([@aweary](https://github.com/aweary) in [#13598](https://github.com/facebook/react/issues/13598))\r\n* Fix a crash when component defines a method called `isReactComponent`. ([@gaearon](https://github.com/gaearon) in [#13608](https://github.com/facebook/react/issues/13608))\r\n* Fix a crash in development mode in IE9 when printing a warning. ([@link-alex](https://github.com/link-alex) in [#13620](https://github.com/facebook/react/issues/13620))\r\n* Provide a better error message when running `react-dom/profiling` with `schedule/tracking`. ([@bvaughn](https://github.com/bvaughn) in [#13605](https://github.com/facebook/react/issues/13605))\r\n* If a `ForwardRef` component defines a `displayName`, use it in warnings. ([@probablyup](https://github.com/probablyup) in [#13615](https://github.com/facebook/react/issues/13615))\r\n\r\n### Schedule (Experimental)\r\n\r\n* Add a separate profiling entry point at `schedule/tracking-profiling`. ([@bvaughn](https://github.com/bvaughn) in [#13605](https://github.com/facebook/react/issues/13605))\r\n" +
-	"## 16.4.2 (August 1, 2018)\r\n\r\n### React DOM Server\r\n\r\n* Fix a [potential XSS vulnerability when the attacker controls an attribute name](https://reactjs.org/blog/2018/08/01/react-v-16-4-2.html) (`CVE-2018-6341`). This fix is available in the latest `react-dom@16.4.2`, as well as in previous affected minor versions: `react-dom@16.0.1`, `react-dom@16.1.2`, `react-dom@16.2.1`, and `react-dom@16.3.3`. ([@gaearon](https://github.com/gaearon) in [#13302](https://github.com/facebook/react/pull/13302))\r\n\r\n* Fix a crash in the server renderer when an attribute is called `hasOwnProperty`. This fix is only available in `react-dom@16.4.2`. ([@gaearon](https://github.com/gaearon) in [#13303](https://github.com/facebook/react/pull/13303))\r\n"
+var reactLog = `
+## 16.5.1 (September 13, 2018)
+
+### React
+
+* Improve the warning when 'React.forwardRef' receives an unexpected number of arguments. ([@andresroberto](https://github.com/andresroberto) in [#13636](https://github.com/facebook/react/issues/13636))
+
+### React DOM
+
+* Fix a regression in unstable exports used by React Native Web. ([@aweary](https://github.com/aweary) in [#13598](https://github.com/facebook/react/issues/13598))
+* Fix a crash when component defines a method called 'isReactComponent'. ([@gaearon](https://github.com/gaearon) in [#13608](https://github.com/facebook/react/issues/13608))
+* Fix a crash in development mode in IE9 when printing a warning. ([@link-alex](https://github.com/link-alex) in [#13620](https://github.com/facebook/react/issues/13620))
+* Provide a better error message when running 'react-dom/profiling' with 'schedule/tracking'. ([@bvaughn](https://github.com/bvaughn) in [#13605](https://github.com/facebook/react/issues/13605))
+* If a 'ForwardRef' component defines a 'displayName', use it in warnings. ([@probablyup](https://github.com/probablyup) in [#13615](https://github.com/facebook/react/issues/13615))
+
+### Schedule (Experimental)
+
+* Add a separate profiling entry point at 'schedule/tracking-profiling'. ([@bvaughn](https://github.com/bvaughn) in [#13605](https://github.com/facebook/react/issues/13605))
+## 16.4.2 (August 1, 2018)
+
+### React DOM Server
+
+* Fix a [potential XSS vulnerability when the attacker controls an attribute name](https://reactjs.org/blog/2018/08/01/react-v-16-4-2.html) ('CVE-2018-6341'). This fix is available in the latest 'react-dom@16.4.2', as well as in previous affected minor versions: 'react-dom@16.0.1', 'react-dom@16.1.2', 'react-dom@16.2.1', and 'react-dom@16.3.3'. ([@gaearon](https://github.com/gaearon) in [#13302](https://github.com/facebook/react/pull/13302))
+
+* Fix a crash in the server renderer when an attribute is called 'hasOwnProperty'. This fix is only available in 'react-dom@16.4.2'. ([@gaearon](https://github.com/gaearon) in [#13303](https://github.com/facebook/react/pull/13303))
+`
 
 func TestReactChangelog(t *testing.T) {
-	releases, err := ReactChangelog(reactLog)
+	releases, err := ReactChangelog("", reactLog)
 
 	if assert.NoError(t, err) {
 		assert.Len(t, releases, 2)
