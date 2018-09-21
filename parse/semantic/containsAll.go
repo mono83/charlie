@@ -13,8 +13,8 @@ type ContainsAll struct {
 }
 
 // IsSatisfied returns true if val is satisfied rules
-func (r ContainsAll) IsSatisfied(val string) bool {
-	for _, expected := range r.And {
+func (c ContainsAll) IsSatisfied(val string) bool {
+	for _, expected := range c.And {
 		if !strings.Contains(strings.ToLower(val), strings.ToLower(expected)) {
 			return false
 		}
@@ -23,11 +23,11 @@ func (r ContainsAll) IsSatisfied(val string) bool {
 }
 
 // GetType returns routed type
-func (r ContainsAll) GetType() *charlie.Type {
-	return &r.Exit
+func (c ContainsAll) GetType() *charlie.Type {
+	return &c.Exit
 }
 
 // GetRoute Returns next route
-func (r ContainsAll) GetRoute() Route {
-	return r.Next
+func (c ContainsAll) GetRoute() Route {
+	return c.Next
 }

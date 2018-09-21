@@ -31,5 +31,5 @@ func Find(name string) (ParserFunc, bool) {
 func init() {
 	registeredParsers = map[string]ParserFunc{}
 	registeredParsers["spring"] = parse.SpringChangelog
-	registeredParsers["facebook/react"] = parse.ReactChangelog
+	registeredParsers["react"] = parse.ReactChangelog
 }

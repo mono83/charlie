@@ -8,16 +8,16 @@ type AlwaysTrue struct {
 }
 
 // IsSatisfied returns true if val is satisfied rules
-func (r AlwaysTrue) IsSatisfied(val string) bool {
+func (AlwaysTrue) IsSatisfied(val string) bool {
 	return true
 }
 
 // GetType returns routed type
-func (r AlwaysTrue) GetType() *charlie.Type {
-	return &r.Exit
+func (a AlwaysTrue) GetType() *charlie.Type {
+	return &a.Exit
 }
 
 // GetRoute Returns next route
-func (r AlwaysTrue) GetRoute() Route {
+func (AlwaysTrue) GetRoute() Route {
 	return nil
 }

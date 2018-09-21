@@ -13,16 +13,16 @@ type Contains struct {
 }
 
 // IsSatisfied returns true if val is satisfied rules
-func (r Contains) IsSatisfied(val string) bool {
-	return strings.Contains(strings.ToLower(val), strings.ToLower(r.Val))
+func (c Contains) IsSatisfied(val string) bool {
+	return strings.Contains(strings.ToLower(val), strings.ToLower(c.Val))
 }
 
 // GetType returns routed type
-func (r Contains) GetType() *charlie.Type {
-	return &r.Exit
+func (c Contains) GetType() *charlie.Type {
+	return &c.Exit
 }
 
 // GetRoute Returns next route
-func (r Contains) GetRoute() Route {
-	return r.Next
+func (c Contains) GetRoute() Route {
+	return c.Next
 }

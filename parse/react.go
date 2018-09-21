@@ -1,11 +1,11 @@
 package parse
 
 import (
+	"errors"
 	"github.com/mono83/charlie"
 	"github.com/mono83/charlie/parse/date"
 	"github.com/mono83/charlie/parse/markdown"
 	"github.com/mono83/charlie/parse/semantic"
-	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -13,9 +13,13 @@ var reactSemanticRoute = semantic.ContainsAny{
 	Or:   []string{"fix", "bug"},
 	Exit: charlie.Fixed,
 	Next: &semantic.ContainsAny{
-		Or:   []string{"add", "improve", "provide"},
+		Or:   []string{"improve", "performance"},
 		Exit: charlie.Performance,
-		Next: &semantic.AlwaysTrue{Exit: charlie.Info},
+		Next: &semantic.ContainsAny{
+			Or:   []string{"add", "provide"},
+			Exit: charlie.Added,
+			Next: &semantic.AlwaysTrue{Exit: charlie.Info},
+		},
 	},
 }
 
@@ -41,16 +45,16 @@ func ReactChangelog(_, data string) ([]charlie.Release, error) {
 			if versionDetected {
 				lastRelease.Version = *version
 			}
-			if t, parsed, _ := date.ParseTime(line.Headers[0]); parsed {
-				lastRelease.Date = *t
+			if t, parsed := date.Parse(line.Headers[0]); parsed {
+				lastRelease.Date = t
 			}
 		} else if versionDetected && *version != lastRelease.Version {
 			// If new release detected while parsing lines
 			releases = append(releases, *lastRelease)
 			// New release
 			lastRelease = &charlie.Release{Version: *version}
-			if t, parsed, _ := date.ParseTime(line.Headers[0]); parsed {
-				lastRelease.Date = *t
+			if t, parsed := date.Parse(line.Headers[0]); parsed {
+				lastRelease.Date = t
 			}
 		}
 

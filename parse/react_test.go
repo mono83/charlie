@@ -48,10 +48,11 @@ func TestReactChangelog(t *testing.T) {
 		}
 
 		summary := releases[0].SummaryType()
-		if assert.Len(t, summary, 3) {
-			assert.Equal(t, summary[charlie.Info], 1)
-			assert.Equal(t, summary[charlie.Performance], 3)
-			assert.Equal(t, summary[charlie.Fixed], 3)
+		if assert.Len(t, summary, 4) {
+			assert.Equal(t, 1, summary[charlie.Info])
+			assert.Equal(t, 2, summary[charlie.Added])
+			assert.Equal(t, 1, summary[charlie.Performance])
+			assert.Equal(t, 3, summary[charlie.Fixed])
 		}
 
 		date, err := time.Parse("2006-01-02", "2018-09-13")
@@ -67,7 +68,7 @@ func TestReactChangelog(t *testing.T) {
 
 		summary = releases[1].SummaryType()
 		if assert.Len(t, summary, 1) {
-			assert.Equal(t, summary[charlie.Fixed], 2)
+			assert.Equal(t, 2, summary[charlie.Fixed])
 		}
 
 		date, err = time.Parse("2006-01-02", "2018-08-01")
