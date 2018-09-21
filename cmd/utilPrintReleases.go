@@ -9,7 +9,13 @@ import (
 
 func printReleases(releases []charlie.Release) {
 	for _, rel := range releases {
-		color.Cyan(fmt.Sprintf("%s", rel.Version))
+		var name string
+		if !rel.Date.IsZero() {
+			name = fmt.Sprintf("%s %s", rel.Version, rel.Date.Format("Jan 02, 2006"))
+		} else {
+			name = fmt.Sprintf("%s", rel.Version)
+		}
+		color.Cyan(name)
 		for i, issue := range rel.Issues {
 			fmt.Printf("%3d. ", i+1)
 			colorForType(issue.Type).Print(issue.Type.String())

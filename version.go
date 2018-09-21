@@ -1,7 +1,7 @@
 package charlie
 
 import (
-	"fmt"
+	"bytes"
 	"strings"
 )
 
@@ -31,6 +31,24 @@ func (v Version) IsStable() bool {
 
 // String returns string representation of version
 func (v Version) String() string {
-	// TODO make more convenient method implementation
-	return fmt.Sprint(v.Major + "." + v.Minor + v.Patch + "-" + v.Label + "." + v.Build)
+	var buffer bytes.Buffer
+
+	buffer.WriteString(v.Major)
+	buffer.WriteString(".")
+	buffer.WriteString(v.Minor)
+
+	if len(v.Patch) != 0 {
+		buffer.WriteString(".")
+		buffer.WriteString(v.Patch)
+	}
+	if len(v.Label) != 0 {
+		buffer.WriteString("-")
+		buffer.WriteString(v.Label)
+	}
+	if len(v.Build) != 0 {
+		buffer.WriteString(".")
+		buffer.WriteString(v.Build)
+	}
+
+	return buffer.String()
 }
