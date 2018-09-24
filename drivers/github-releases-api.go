@@ -19,6 +19,18 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 
 	// TODO validate repository name
 
+	// Reading latest release into JSON
+	var rel simplifiedReleaseInfo
+	err := IntoJSON(&rel)(Only200(HTTPGet("https://api.github.com/repos/" + repository + "/releases/latest")))
+	if err != nil {
+		return err
+	}
+
+	// Invoking callback
+	if err := callback(rel.Name, rel.Body); err != nil {
+		return err
+	}
+
 	// Reading list into JSON
 	var list []simplifiedReleaseInfo
 	page := 1
@@ -30,6 +42,9 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 		}
 
 		for _, r := range list {
+			if r.Name == rel.Name {
+				continue
+			}
 			if err := callback(r.Name, r.Body); err != nil {
 				return err
 			}
