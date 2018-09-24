@@ -2,6 +2,7 @@ package drivers
 
 import (
 	"errors"
+	"regexp"
 )
 
 // GitHubReleasesAPI is a driver, that obtains release information
@@ -20,6 +21,7 @@ import (
 //
 //
 // PS. TODO implement authentication
+
 func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
 	if callback == nil {
 		return errors.New("empty callback")
@@ -63,4 +65,15 @@ type simplifiedReleaseInfo struct {
 	Name        string `json:"tag_name"`
 	PublishedAt string `json:"published_at"`
 	Body        string `json:"body"`
+}
+
+var userNameRegexp = regexp.MustCompile("(^[\\w-.]+$)") // TODO change it
+var repoNameRegexp = regexp.MustCompile("(^[\\w-.]+$)")
+
+func isValidGithubUserName(userName string) bool {
+	return userNameRegexp.MatchString(userName)
+}
+
+func isValidGithubRepoName(repoName string) bool {
+	return repoNameRegexp.MatchString(repoName)
 }
