@@ -2,6 +2,7 @@ package drivers
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -11,15 +12,6 @@ import (
 //
 // For each obtained release callback function will be invoked
 // Execution will be stopped when callback returns null or there are no more releases
-//
-// Flow:
-// 1. Driver reads latest release and sends it to callback
-//    https://developer.github.com/v3/repos/releases/#get-the-latest-release
-//    Example: https://api.github.com/repos/facebook/react/releases/latest
-// 2. If there were no errors it fetches releases list
-//    https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository
-// 3. TODO If there is still no error - it traverses across other pages
-//
 //
 // PS. TODO implement authentication
 func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
@@ -45,21 +37,25 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 
 	// Reading list into JSON
 	var list []simplifiedReleaseInfo
-	err = IntoJSON(&list)(Only200(HTTPGet("https://api.github.com/repos/" + repository + "/releases")))
-	if err != nil {
-		return err
-	}
-
-	for _, r := range list {
-		if r.Name == rel.Name {
-			continue
-		}
-
-		if err := callback(r.Name, r.Body); err != nil {
+	page := 1
+	for ok := true; ok; ok = len(list) > 0 {
+		url := fmt.Sprintf("https://api.github.com/repos/%s/releases?page=%d", repository, page)
+		err := IntoJSON(&list)(Only200(HTTPGet(url)))
+		if err != nil {
 			return err
 		}
-	}
 
+		for _, r := range list {
+			if r.Name == rel.Name {
+				continue
+			}
+			if err := callback(r.Name, r.Body); err != nil {
+				return err
+			}
+		}
+
+		page++
+	}
 	return nil
 }
 
