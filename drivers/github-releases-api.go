@@ -3,6 +3,7 @@ package drivers
 import (
 	"errors"
 	"regexp"
+	"strings"
 )
 
 // GitHubReleasesAPI is a driver, that obtains release information
@@ -21,13 +22,14 @@ import (
 //
 //
 // PS. TODO implement authentication
-
 func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
 	if callback == nil {
 		return errors.New("empty callback")
 	}
 
-	// TODO validate repository name
+	if !isValidGithubRepository(repository) {
+		return errors.New("Invalid repository name")
+	}
 
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
@@ -67,11 +69,20 @@ type simplifiedReleaseInfo struct {
 	Body        string `json:"body"`
 }
 
-var userNameRegexp = regexp.MustCompile("(^[\\w-.]+$)") // TODO change it
+func isValidGithubRepository(repository string) bool {
+	parts := strings.Split(repository, "/")
+	if len(parts) == 2 && isValidGithubRepoName(parts[0]) && isValidGithubUserName(parts[1]) {
+		return true
+	}
+	return false
+}
+
 var repoNameRegexp = regexp.MustCompile("(^[\\w-.]+$)")
+var userNameRegexp = regexp.MustCompile("(^[\\w]([\\w-]*[\\w])?$)")
+var multipleHyphenRegexp = regexp.MustCompile("-{2,}")
 
 func isValidGithubUserName(userName string) bool {
-	return userNameRegexp.MatchString(userName)
+	return userNameRegexp.MatchString(userName) && !multipleHyphenRegexp.MatchString(userName)
 }
 
 func isValidGithubRepoName(repoName string) bool {
