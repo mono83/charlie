@@ -34,7 +34,7 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 	// Reading list into JSON
 	var list []simplifiedReleaseInfo
 	page := 1
-	for ok := true; ok; ok = len(list) > 0{
+	for ok := true; ok; ok = len(list) > 0 {
 		url := fmt.Sprintf("https://api.github.com/repos/%s/releases?page=%d", repository, page)
 		err := IntoJSON(&list)(Only200(HTTPGet(url)))
 		if err != nil {
