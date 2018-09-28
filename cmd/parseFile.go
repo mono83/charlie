@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/mono83/charlie"
 	"github.com/mono83/charlie/parse/parsers"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ var parseFile = &cobra.Command{
 		}
 
 		// Parsing
-		releases, err := p(parseFileTitle, string(bts))
+		releases, err := p(charlie.Source{Title: parseFileTitle, Body: string(bts)})
 		if err != nil {
 			return err
 		}

@@ -24,8 +24,8 @@ var reactSemanticRoute = semantic.ContainsAny{
 }
 
 // ReactChangelog Parses react change logs
-func ReactChangelog(_, data string) ([]charlie.Release, error) {
-	lines := markdown.ToListLines(data)
+func ReactChangelog(src charlie.Source) ([]charlie.Release, error) {
+	lines := markdown.ToListLines(src.Body)
 
 	if len(lines) == 0 {
 		return nil, errors.New("undefined markdown lines")

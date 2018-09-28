@@ -7,7 +7,7 @@ import (
 
 // ParserFunc describes common parsers.
 // It takes title (may be empty) and returns slice of releases
-type ParserFunc func(title, body string) ([]charlie.Release, error)
+type ParserFunc func(src charlie.Source) ([]charlie.Release, error)
 
 // registeredParsers contains collection of registered parsers
 var registeredParsers map[string]ParserFunc

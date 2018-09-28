@@ -13,11 +13,11 @@ var springVersionPattern = regexp.MustCompile(`Changes in version ([\w\d.]+) \((
 var springIssuePattern = regexp.MustCompile(`^\* ([\w\d\-]+) - (.*)$`)
 
 // SpringChangelog parses Spring framework changelog
-func SpringChangelog(_, data string) ([]charlie.Release, error) {
+func SpringChangelog(src charlie.Source) ([]charlie.Release, error) {
 	var result []charlie.Release
 
 	var current *charlie.Release
-	for i, line := range strings.Split(data, "\n") {
+	for i, line := range strings.Split(src.Body, "\n") {
 		line = Trim(line)
 
 		if len(line) == 0 {

@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/mono83/charlie"
 	"github.com/mono83/charlie/drivers"
 	"github.com/mono83/charlie/parse/parsers"
 	"github.com/spf13/cobra"
@@ -34,7 +35,7 @@ var parseURL = &cobra.Command{
 		}
 
 		// Parsing
-		releases, err := p(parseURLTitle, string(bts))
+		releases, err := p(charlie.Source{Title: parseURLTitle, Body: string(bts)})
 		if err != nil {
 			return err
 		}

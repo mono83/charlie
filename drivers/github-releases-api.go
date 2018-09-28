@@ -3,6 +3,7 @@ package drivers
 import (
 	"errors"
 	"fmt"
+	"github.com/mono83/charlie"
 	"regexp"
 	"strings"
 )
@@ -14,13 +15,13 @@ import (
 // Execution will be stopped when callback returns null or there are no more releases
 //
 // PS. TODO implement authentication
-func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
+func GitHubReleasesAPI(repository string, callback func(charlie.Source) error) error {
 	if callback == nil {
 		return errors.New("empty callback")
 	}
 
 	if !isValidGithubRepository(repository) {
-		return errors.New("Invalid repository name")
+		return errors.New("invalid repository name")
 	}
 
 	// Reading latest release into JSON
@@ -31,7 +32,7 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 	}
 
 	// Invoking callback
-	if err := callback(rel.Name, rel.Body); err != nil {
+	if err := callback(rel.toSource()); err != nil {
 		return err
 	}
 
@@ -49,7 +50,7 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 			if r.Name == rel.Name {
 				continue
 			}
-			if err := callback(r.Name, r.Body); err != nil {
+			if err := callback(rel.toSource()); err != nil {
 				return err
 			}
 		}
@@ -63,6 +64,14 @@ type simplifiedReleaseInfo struct {
 	Name        string `json:"tag_name"`
 	PublishedAt string `json:"published_at"`
 	Body        string `json:"body"`
+}
+
+func (s simplifiedReleaseInfo) toSource() charlie.Source {
+	return charlie.Source{
+		Body:  s.Body,
+		Title: s.Name,
+		Date:  s.PublishedAt,
+	}
 }
 
 func isValidGithubRepository(repository string) bool {

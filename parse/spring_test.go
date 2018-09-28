@@ -63,7 +63,7 @@ Changes in version 2.1.0.RC2 (2018-08-20)
 * DATACMNS-1351 - Fix typos in reference documentation.`
 
 func TestSpringChangelog(t *testing.T) {
-	logs, err := SpringChangelog("", springLog)
+	logs, err := SpringChangelog(charlie.Source{Body: springLog})
 	if assert.NoError(t, err) {
 		assert.Len(t, logs, 3)
 		assert.Equal(t, charlie.Version{Major: "2", Minor: "0", Patch: "10", Label: "RELEASE"}, logs[0].Version)

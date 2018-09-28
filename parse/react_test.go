@@ -35,7 +35,7 @@ var reactLog = `
 `
 
 func TestReactChangelog(t *testing.T) {
-	releases, err := ReactChangelog("", reactLog)
+	releases, err := ReactChangelog(charlie.Source{Body: reactLog})
 
 	if assert.NoError(t, err) {
 		assert.Len(t, releases, 2)
