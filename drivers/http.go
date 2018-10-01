@@ -9,12 +9,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-	"github.com/BurntSushi/toml"
-	"github.com/mono83/charlie/config"
 )
 
 // HTTPGet is a simple wrapper over HTTP client
 func HTTPGet(url string) (int, string, error) {
+	return HTTPGetWithHeaders(url, make(map[string]string))
+}
+
+func HTTPGetWithHeaders(url string, headers map[string]string) (int, string, error) {
 	// Making logger
 	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(url))
 
@@ -31,11 +33,8 @@ func HTTPGet(url string) (int, string, error) {
 	}
 	req.Header.Add("User-Agent", "Charlie Changelog Agent (v0.1-alpha)")
 
-	var cfg config.Config
-	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil {
-		fmt.Println("Error during reading `config.toml` file. Does it exist?")
-	} else {
-		req.Header.Add("Authorization", "Basic " + string(cfg.Auth.Github))
+	for k,v := range headers {
+		req.Header.Add(k, v)
 	}
 
 	// Making request
