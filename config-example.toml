@@ -1,0 +1,3 @@
+[auth]
+# Github Basic Auth
+github = ""

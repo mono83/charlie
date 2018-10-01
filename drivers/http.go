@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"github.com/BurntSushi/toml"
+	"github.com/mono83/charlie/config"
 )
 
 // HTTPGet is a simple wrapper over HTTP client
@@ -28,6 +30,13 @@ func HTTPGet(url string) (int, string, error) {
 		return -1, "", err
 	}
 	req.Header.Add("User-Agent", "Charlie Changelog Agent (v0.1-alpha)")
+
+	var cfg config.Config
+	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil {
+		fmt.Println("Error during reading `config.toml` file. Does it exist?")
+	} else {
+		req.Header.Add("Authorization", "Basic " + string(cfg.Auth.Github))
+	}
 
 	// Making request
 	res, err := client.Do(req)
