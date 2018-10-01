@@ -1,10 +1,9 @@
 package config
 
 type Config struct {
-	Auth   auth
+	Auth auth
 }
 
 type auth struct {
-	Github   string
+	Github string
 }
-

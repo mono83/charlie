@@ -3,10 +3,11 @@ package drivers
 import (
 	"errors"
 	"fmt"
+	"github.com/BurntSushi/toml"
+	"github.com/mono83/charlie/config"
 	"regexp"
 	"strings"
-	"github.com/mono83/charlie/config"
-	"github.com/BurntSushi/toml"
+	"time"
 )
 
 // GitHubReleasesAPI is a driver, that obtains release information
@@ -15,8 +16,7 @@ import (
 // For each obtained release callback function will be invoked
 // Execution will be stopped when callback returns null or there are no more releases
 //
-// PS. TODO implement authentication
-func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
+func GitHubReleasesApiIfModifiedSince(repository string, callback func(title, body string) error, lastModified time.Time) error {
 	if callback == nil {
 		return errors.New("empty callback")
 	}
@@ -25,9 +25,12 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 		return errors.New("Invalid repository name")
 	}
 
+	headers := getAuthHeaders()
+	headers["If-Modified-Since"] = lastModified.Format("Mon, 02 Jan 2006 15:04:05 MST")
+
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
-	err := IntoJSON(&rel)(Only200(HTTPGetWithHeaders("https://api.github.com/repos/" + repository + "/releases/latest", getAuthHeaders())))
+	err := IntoJSON(&rel)(Only200(HTTPGetWithHeaders("https://api.github.com/repos/"+repository+"/releases/latest", headers)))
 	if err != nil {
 		return err
 	}
@@ -61,10 +64,14 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 	return nil
 }
 
-func getAuthHeaders() map[string]string{
+func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
+	return GitHubReleasesApiIfModifiedSince(repository, callback, time.Unix(0, 0))
+}
+
+func getAuthHeaders() map[string]string {
 	var cfg config.Config
 	headers := make(map[string]string)
-	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil || string(cfg.Auth.Github) == ""{
+	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil || string(cfg.Auth.Github) == "" {
 		fmt.Println("Error during reading Github authentication data from `config.toml`. Check it.")
 	} else {
 		headers["Authorization"] = "Basic " + string(cfg.Auth.Github)

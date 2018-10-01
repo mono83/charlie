@@ -33,7 +33,7 @@ func HTTPGetWithHeaders(url string, headers map[string]string) (int, string, err
 	}
 	req.Header.Add("User-Agent", "Charlie Changelog Agent (v0.1-alpha)")
 
-	for k,v := range headers {
+	for k, v := range headers {
 		req.Header.Add(k, v)
 	}
 
