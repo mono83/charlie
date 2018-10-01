@@ -25,17 +25,9 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 		return errors.New("Invalid repository name")
 	}
 
-	var cfg config.Config
-	headers := make(map[string]string)
-	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil || string(cfg.Auth.Github) == ""{
-		fmt.Println("Error during reading Github authentication data from `config.toml`. Check it.")
-	} else {
-		headers["Authorization"] = "Basic " + string(cfg.Auth.Github)
-	}
-
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
-	err := IntoJSON(&rel)(Only200(HTTPGetWithHeaders("https://api.github.com/repos/" + repository + "/releases/latest", headers)))
+	err := IntoJSON(&rel)(Only200(HTTPGetWithHeaders("https://api.github.com/repos/" + repository + "/releases/latest", getAuthHeaders())))
 	if err != nil {
 		return err
 	}
@@ -67,6 +59,17 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 		page++
 	}
 	return nil
+}
+
+func getAuthHeaders() map[string]string{
+	var cfg config.Config
+	headers := make(map[string]string)
+	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil || string(cfg.Auth.Github) == ""{
+		fmt.Println("Error during reading Github authentication data from `config.toml`. Check it.")
+	} else {
+		headers["Authorization"] = "Basic " + string(cfg.Auth.Github)
+	}
+	return headers
 }
 
 type simplifiedReleaseInfo struct {
