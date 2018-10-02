@@ -3,11 +3,10 @@ package drivers
 import (
 	"errors"
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/mono83/charlie/config"
 	"regexp"
 	"strings"
 	"time"
+	"gopkg.in/ini.v1"
 )
 
 // GitHubReleasesAPI is a driver, that obtains release information
@@ -45,7 +44,7 @@ func GitHubReleasesApiIfModifiedSince(repository string, callback func(title, bo
 	page := 1
 	for ok := true; ok; ok = len(list) > 0 {
 		url := fmt.Sprintf("https://api.github.com/repos/%s/releases?page=%d", repository, page)
-		err := IntoJSON(&list)(Only200(HTTPGet(url)))
+		err := IntoJSON(&list)(Only200(HTTPGetWithHeaders(url, headers)))
 		if err != nil {
 			return err
 		}
@@ -69,12 +68,12 @@ func GitHubReleasesAPI(repository string, callback func(title, body string) erro
 }
 
 func getAuthHeaders() map[string]string {
-	var cfg config.Config
 	headers := make(map[string]string)
-	if _, err := toml.DecodeFile("config.toml", &cfg); err != nil || string(cfg.Auth.Github) == "" {
-		fmt.Println("Error during reading Github authentication data from `config.toml`. Check it.")
+
+	if cfg, err := ini.Load("config.ini"); err != nil || cfg.Section("auth").Key("github").String() == ""{
+		fmt.Println("Error during reading Github authentication data from `config.ini`. Check it.")
 	} else {
-		headers["Authorization"] = "Basic " + string(cfg.Auth.Github)
+		headers["Authorization"] = "Basic " + cfg.Section("auth").Key("github").String()
 	}
 	return headers
 }
