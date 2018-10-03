@@ -16,6 +16,7 @@ func HTTPGet(url string) (int, string, error) {
 	return HTTPGetWithHeaders(url, make(map[string]string))
 }
 
+// HTTPGetWithHeaders provides the same functionality as HTTPGet, but allows to specify request headers
 func HTTPGetWithHeaders(url string, headers map[string]string) (int, string, error) {
 	// Making logger
 	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(url))

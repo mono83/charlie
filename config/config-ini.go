@@ -11,17 +11,19 @@ type iniConfig struct {
 	file  string
 }
 
+// DefaultIniConfig creates ini config with default properties source file named `config.ini`
 func DefaultIniConfig() ConfigProvider {
 	return iniConfig{cache: make(map[string]string), file: "config.ini"}
 }
 
+// IniConfig creates ini config with specified properties file as source.
 func IniConfig(fileName string) ConfigProvider {
 	return iniConfig{cache: make(map[string]string), file: fileName}
 }
 
 // GetConfig returns config for specified key-string
 // It is expected that input string can contain # delimiter that separates section from key,
-// (e.g. `auth#github` is for section `auth` and key `github`).
+// (e.g. `auth#github` for section `auth` and key `github`).
 func (i iniConfig) GetConfig(sectionKey string) (string, error) {
 
 	if sectionKey == "" {
@@ -29,7 +31,7 @@ func (i iniConfig) GetConfig(sectionKey string) (string, error) {
 	}
 
 	if i.cache[sectionKey] != "" {
-		return i.cache[sectionKey], nil
+		return i.cache[sectionKey], nil // TODO Not too much sense in this cache. Either avoid it or cache the contents of the whole file.
 	}
 
 	cfg, err := ini.Load(i.file)
