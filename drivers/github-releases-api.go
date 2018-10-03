@@ -3,19 +3,19 @@ package drivers
 import (
 	"errors"
 	"fmt"
+	"github.com/mono83/charlie/config"
 	"regexp"
 	"strings"
 	"time"
-	"gopkg.in/ini.v1"
 )
 
-// GitHubReleasesAPI is a driver, that obtains release information
-// directly from GitHub releases API https://developer.github.com/v3/repos/releases/
-//
-// For each obtained release callback function will be invoked
-// Execution will be stopped when callback returns null or there are no more releases
-//
-func GitHubReleasesApiIfModifiedSince(repository string, callback func(title, body string) error, lastModified time.Time) error {
+type GithubDriver struct {
+	ConfigProvider config.ConfigProvider
+}
+
+// ApplyToReleasesLastProcessed is similar to ApplyToReleases
+// but also accepts time when this method was last called for this repository
+func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback func(title, body string) error, lastProcessed time.Time) error {
 	if callback == nil {
 		return errors.New("empty callback")
 	}
@@ -24,8 +24,13 @@ func GitHubReleasesApiIfModifiedSince(repository string, callback func(title, bo
 		return errors.New("Invalid repository name")
 	}
 
-	headers := getAuthHeaders()
-	headers["If-Modified-Since"] = lastModified.Format("Mon, 02 Jan 2006 15:04:05 MST")
+	headers := make(map[string]string)
+	if auth, err := d.ConfigProvider.GetConfig("auth#github"); err != nil {
+		fmt.Println("Error during reading Github authentication data from `config.ini`. Check it.")
+	} else {
+		headers["Authorization"] = "Basic " + auth
+	}
+	headers["If-Modified-Since"] = lastProcessed.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
@@ -63,19 +68,13 @@ func GitHubReleasesApiIfModifiedSince(repository string, callback func(title, bo
 	return nil
 }
 
-func GitHubReleasesAPI(repository string, callback func(title, body string) error) error {
-	return GitHubReleasesApiIfModifiedSince(repository, callback, time.Unix(0, 0))
-}
-
-func getAuthHeaders() map[string]string {
-	headers := make(map[string]string)
-
-	if cfg, err := ini.Load("config.ini"); err != nil || cfg.Section("auth").Key("github").String() == ""{
-		fmt.Println("Error during reading Github authentication data from `config.ini`. Check it.")
-	} else {
-		headers["Authorization"] = "Basic " + cfg.Section("auth").Key("github").String()
-	}
-	return headers
+// ApplyToReleases is a driver method, that obtains release information
+// directly from GitHub releases API https://developer.github.com/v3/repos/releases/
+//
+// For each obtained release callback function will be invoked
+// Execution will be stopped when callback returns null or there are no more releases
+func (d GithubDriver) ApplyToReleases(repository string, callback func(title, body string) error) error {
+	return d.ApplyToReleasesLastProcessed(repository, callback, time.Unix(0, 0))
 }
 
 type simplifiedReleaseInfo struct {
