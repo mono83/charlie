@@ -25,10 +25,10 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	}
 
 	headers := make(map[string]string)
-	if auth, err := d.ConfigProvider.GetConfig("auth#github"); err != nil {
-		fmt.Println("Error during reading Github authentication data from `config.ini`. Check it.")
+	if cfg, err := d.ConfigProvider.GetConfig(); err != nil {
+		fmt.Println("Error during reading configuration data.")
 	} else {
-		headers["Authorization"] = "Basic " + auth
+		headers["Authorization"] = "Basic " + cfg.Auth.Github
 	}
 	headers["If-Modified-Since"] = lastProcessed.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
