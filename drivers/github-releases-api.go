@@ -3,12 +3,13 @@ package drivers
 import (
 	"errors"
 	"fmt"
+	"github.com/mono83/charlie/http"
 	"regexp"
 	"strings"
 	"time"
-	"github.com/mono83/charlie/http"
 )
 
+// GithubDriver is a driver for processing releases in Github format
 type GithubDriver struct {
 	Auth string
 }
@@ -30,7 +31,8 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
-	err := http.IntoJSON(&rel)(http.Only200(http.Get(http.GetParams{"https://api.github.com/repos/" + repository + "/releases/latest", headers})))
+	url := "https://api.github.com/repos/" + repository + "/releases/latest"
+	err := http.IntoJSON(&rel)(http.Only200(http.Get(http.GetParams{URL: url, Headers: headers})))
 	if err != nil {
 		return err
 	}
@@ -45,7 +47,7 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	page := 1
 	for ok := true; ok; ok = len(list) > 0 {
 		url := fmt.Sprintf("https://api.github.com/repos/%s/releases?page=%d", repository, page)
-		err := http.IntoJSON(&list)(http.Only200(http.Get(http.GetParams{url, headers})))
+		err := http.IntoJSON(&list)(http.Only200(http.Get(http.GetParams{URL: url, Headers: headers})))
 		if err != nil {
 			return err
 		}

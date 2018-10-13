@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/mono83/charlie/drivers"
+	"github.com/mono83/charlie/http"
 	"github.com/mono83/charlie/parse/parsers"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ var parseURL = &cobra.Command{
 		}
 
 		// Making request
-		code, bts, err := drivers.HTTPGet(args[1])
+		code, bts, err := http.BasicGet(args[1])
 		if err != nil {
 			return err
 		}

@@ -1,8 +1,8 @@
 package ini
 
 import (
-	"gopkg.in/ini.v1"
 	"github.com/mono83/charlie/config"
+	"gopkg.in/ini.v1"
 )
 
 // GetDefaultConfig returns configuration structure read from file named `config.ini`
@@ -10,7 +10,7 @@ func GetDefaultConfig() (config.Config, error) {
 	return loadConfig("config.ini")
 }
 
-// GetDefaultConfig returns configuration structure read from specified ini file
+// GetConfigFromSource returns configuration structure read from specified ini file
 func GetConfigFromSource(file string) (config.Config, error) {
 	return loadConfig(file)
 }

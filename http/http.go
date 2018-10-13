@@ -11,15 +11,20 @@ import (
 	"time"
 )
 
+// BasicGet is a simple wrapper over HTTP client
+func BasicGet(url string) (int, string, error) {
+	return Get(GetParams{URL: url})
+}
+
 // Get performs GET request according to passed parameters
 func Get(params GetParams) (int, string, error) {
 
-	if params.Url == "" {
+	if params.URL == "" {
 		return 0, "", errors.New("Request URL missing")
 	}
 
 	// Making logger
-	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(params.Url))
+	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(params.URL))
 
 	// Building HTTP client
 	client := http.Client{}
@@ -27,7 +32,7 @@ func Get(params GetParams) (int, string, error) {
 	// Building request
 	log.Trace("Making GET request to :url")
 	before := time.Now()
-	req, err := http.NewRequest("GET", params.Url, nil)
+	req, err := http.NewRequest("GET", params.URL, nil)
 	if err != nil {
 		log.Warning("Unable to build request. Maybe URL (:url) is incorrect - :err", args.Error{Err: err})
 		return -1, "", err
@@ -89,6 +94,6 @@ func IntoJSON(target interface{}) func(string, error) error {
 
 // GetParams contains all the parameters for get request
 type GetParams struct {
-	Url     string
+	URL     string
 	Headers map[string]string
 }
