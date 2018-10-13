@@ -3,14 +3,13 @@ package drivers
 import (
 	"errors"
 	"fmt"
-	"github.com/mono83/charlie/config"
 	"regexp"
 	"strings"
 	"time"
 )
 
 type GithubDriver struct {
-	ConfigProvider config.ConfigProvider
+	auth string
 }
 
 // ApplyToReleasesLastProcessed is similar to ApplyToReleases
@@ -25,11 +24,7 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	}
 
 	headers := make(map[string]string)
-	if cfg, err := d.ConfigProvider.GetDefaultConfig(); err != nil {
-		fmt.Println("Error during reading configuration data.")
-	} else {
-		headers["Authorization"] = "Basic " + cfg.Auth.Github
-	}
+	headers["Authorization"] = "Basic " + d.auth
 	headers["If-Modified-Since"] = lastProcessed.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
 	// Reading latest release into JSON

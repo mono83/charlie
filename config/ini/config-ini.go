@@ -1,29 +1,27 @@
-package config
+package ini
 
 import (
 	"gopkg.in/ini.v1"
+	"github.com/mono83/charlie/config"
 )
 
-type Ini struct {
-}
-
 // GetDefaultConfig returns configuration structure read from file named `config.ini`
-func (Ini) GetDefaultConfig() (Config, error) {
+func GetDefaultConfig() (config.Config, error) {
 	return loadConfig("config.ini")
 }
 
 // GetDefaultConfig returns configuration structure read from specified ini file
-func (Ini) GetConfigFromSource(file string) (Config, error) {
+func GetConfigFromSource(file string) (config.Config, error) {
 	return loadConfig(file)
 }
 
 // loadConfig loads config from specified file
-func loadConfig(file string) (Config, error) {
+func loadConfig(file string) (config.Config, error) {
 	cfg, err := ini.Load(file)
 	if err != nil {
-		return Config{}, err
+		return config.Config{}, err
 	}
-	c := new(Config)
+	c := new(config.Config)
 	err = cfg.MapTo(c)
 	return *c, err
 }
