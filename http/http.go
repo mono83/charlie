@@ -1,4 +1,4 @@
-package drivers
+package http
 
 import (
 	"encoding/json"
@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-// HTTPGet is a simple wrapper over HTTP client
-func HTTPGet(url string) (int, string, error) {
-	return HTTPGetWithHeaders(url, make(map[string]string))
-}
+// Get performs GET request according to passed parameters
+func Get(params GetParams) (int, string, error) {
 
-// HTTPGetWithHeaders provides the same functionality as HTTPGet, but allows to specify request headers
-func HTTPGetWithHeaders(url string, headers map[string]string) (int, string, error) {
+	if params.Url == "" {
+		return 0, "", errors.New("Request URL missing")
+	}
+
 	// Making logger
-	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(url))
+	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(params.Url))
 
 	// Building HTTP client
 	client := http.Client{}
@@ -27,14 +27,14 @@ func HTTPGetWithHeaders(url string, headers map[string]string) (int, string, err
 	// Building request
 	log.Trace("Making GET request to :url")
 	before := time.Now()
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", params.Url, nil)
 	if err != nil {
 		log.Warning("Unable to build request. Maybe URL (:url) is incorrect - :err", args.Error{Err: err})
 		return -1, "", err
 	}
 	req.Header.Add("User-Agent", "Charlie Changelog Agent (v0.1-alpha)")
 
-	for k, v := range headers {
+	for k, v := range params.Headers {
 		req.Header.Add(k, v)
 	}
 
@@ -85,4 +85,10 @@ func IntoJSON(target interface{}) func(string, error) error {
 		}
 		return json.Unmarshal([]byte(body), target)
 	}
+}
+
+// GetParams contains all the parameters for get request
+type GetParams struct {
+	Url     string
+	Headers map[string]string
 }

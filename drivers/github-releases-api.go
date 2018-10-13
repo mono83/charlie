@@ -6,10 +6,11 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"github.com/mono83/charlie/http"
 )
 
 type GithubDriver struct {
-	auth string
+	Auth string
 }
 
 // ApplyToReleasesLastProcessed is similar to ApplyToReleases
@@ -24,12 +25,12 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	}
 
 	headers := make(map[string]string)
-	headers["Authorization"] = "Basic " + d.auth
+	headers["Authorization"] = "Basic " + d.Auth
 	headers["If-Modified-Since"] = lastProcessed.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
 	// Reading latest release into JSON
 	var rel simplifiedReleaseInfo
-	err := IntoJSON(&rel)(Only200(HTTPGetWithHeaders("https://api.github.com/repos/"+repository+"/releases/latest", headers)))
+	err := http.IntoJSON(&rel)(http.Only200(http.Get(http.GetParams{"https://api.github.com/repos/" + repository + "/releases/latest", headers})))
 	if err != nil {
 		return err
 	}
@@ -44,7 +45,7 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	page := 1
 	for ok := true; ok; ok = len(list) > 0 {
 		url := fmt.Sprintf("https://api.github.com/repos/%s/releases?page=%d", repository, page)
-		err := IntoJSON(&list)(Only200(HTTPGetWithHeaders(url, headers)))
+		err := http.IntoJSON(&list)(http.Only200(http.Get(http.GetParams{url, headers})))
 		if err != nil {
 			return err
 		}
