@@ -25,7 +25,7 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	}
 
 	headers := make(map[string]string)
-	if cfg, err := d.ConfigProvider.GetConfig(); err != nil {
+	if cfg, err := d.ConfigProvider.GetDefaultConfig(); err != nil {
 		fmt.Println("Error during reading configuration data.")
 	} else {
 		headers["Authorization"] = "Basic " + cfg.Auth.Github

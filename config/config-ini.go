@@ -4,24 +4,22 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-type iniConfig struct {
-	cache map[string]string
-	file  string
+type Ini struct {
 }
 
-// DefaultIniConfig creates ini config with default properties source file named `config.ini`
-func DefaultIniConfig() ConfigProvider {
-	return iniConfig{cache: make(map[string]string), file: "config.ini"}
+// GetDefaultConfig returns configuration structure read from file named `config.ini`
+func (Ini) GetDefaultConfig() (Config, error) {
+	return loadConfig("config.ini")
 }
 
-// IniConfig creates ini config with specified properties file as source.
-func IniConfig(fileName string) ConfigProvider {
-	return iniConfig{cache: make(map[string]string), file: fileName}
+// GetDefaultConfig returns configuration structure read from specified ini file
+func (Ini) GetConfigFromSource(file string) (Config, error) {
+	return loadConfig(file)
 }
 
-// GetConfig returns configuration structure read from ini file
-func (i iniConfig) GetConfig() (Config, error) {
-	cfg, err := ini.Load(i.file)
+// loadConfig loads config from specified file
+func loadConfig(file string) (Config, error) {
+	cfg, err := ini.Load(file)
 	if err != nil {
 		return Config{}, err
 	}
