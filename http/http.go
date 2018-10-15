@@ -1,4 +1,4 @@
-package drivers
+package http
 
 import (
 	"encoding/json"
@@ -11,10 +11,20 @@ import (
 	"time"
 )
 
-// HTTPGet is a simple wrapper over HTTP client
-func HTTPGet(url string) (int, string, error) {
+// BasicGet is a simple wrapper over HTTP client
+func BasicGet(url string) (int, string, error) {
+	return Get(GetParams{URL: url})
+}
+
+// Get performs GET request according to passed parameters
+func Get(params GetParams) (int, string, error) {
+
+	if params.URL == "" {
+		return 0, "", errors.New("Request URL missing")
+	}
+
 	// Making logger
-	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(url))
+	log := xray.ROOT.Fork().WithLogger("http-client").With(args.URL(params.URL))
 
 	// Building HTTP client
 	client := http.Client{}
@@ -22,12 +32,16 @@ func HTTPGet(url string) (int, string, error) {
 	// Building request
 	log.Trace("Making GET request to :url")
 	before := time.Now()
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", params.URL, nil)
 	if err != nil {
 		log.Warning("Unable to build request. Maybe URL (:url) is incorrect - :err", args.Error{Err: err})
 		return -1, "", err
 	}
 	req.Header.Add("User-Agent", "Charlie Changelog Agent (v0.1-alpha)")
+
+	for k, v := range params.Headers {
+		req.Header.Add(k, v)
+	}
 
 	// Making request
 	res, err := client.Do(req)
@@ -76,4 +90,10 @@ func IntoJSON(target interface{}) func(string, error) error {
 		}
 		return json.Unmarshal([]byte(body), target)
 	}
+}
+
+// GetParams contains all the parameters for get request
+type GetParams struct {
+	URL     string
+	Headers map[string]string
 }
