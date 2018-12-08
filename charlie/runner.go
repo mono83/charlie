@@ -12,14 +12,14 @@ import (
 /*
 	This is an example of different drivers/parsers configurations being attached to channel
 */
-func main() {
+func run() {
 
 	// Creating channel for incoming requests
 	requests := make(chan string)
 
 	// Imitating requests for changelog processing
-	setPeriodicRequests(requests, 15*time.Second, "react")
-	setPeriodicRequests(requests, 40*time.Second, "spring")
+	setPeriodicRequests(requests, 5*time.Second, "react")
+	setPeriodicRequests(requests, 3*time.Second, "spring")
 
 	// Subscribing processors
 	config, err := ini.GetDefaultConfig()
