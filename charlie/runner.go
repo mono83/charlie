@@ -27,7 +27,7 @@ func run() {
 		panic("No configuration found")
 	}
 
-	githubDriver := drivers.GithubDriver{config.Auth.Github}
+	githubDriver := drivers.GithubDriver{Auth: config.Auth.Github}
 	lastProcessedTimes := make(map[string]time.Time)
 
 	for {

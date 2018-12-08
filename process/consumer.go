@@ -1,11 +1,12 @@
 package process
 
 import (
-	"github.com/mono83/charlie"
-	"fmt"
 	"bytes"
+	"fmt"
+	"github.com/mono83/charlie"
 )
 
+// ReleaseConsumer accepts Release and performs implementation specific action on it
 type ReleaseConsumer func(release charlie.Release) error
 
 // PrintToConsole is an example of ReleaseConsumer that prints information about release into console
