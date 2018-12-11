@@ -34,6 +34,7 @@ func (d GithubDriver) ApplyToReleasesLastProcessed(repository string, callback f
 	url := "https://api.github.com/repos/" + repository + "/releases/latest"
 	err := http.IntoJSON(&rel)(http.Only200(http.Get(http.GetParams{URL: url, Headers: headers})))
 	if err != nil {
+		fmt.Println("Github Driver - ", err)
 		return err
 	}
 
