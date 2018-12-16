@@ -1,6 +1,7 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -90,6 +91,19 @@ func IntoJSON(target interface{}) func(string, error) error {
 		}
 		return json.Unmarshal([]byte(body), target)
 	}
+}
+
+// ReadFile returns contents of the file for specified url
+func ReadFile(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(resp.Body)
+	return buf.Bytes(), nil
 }
 
 // GetParams contains all the parameters for get request
