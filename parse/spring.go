@@ -45,7 +45,7 @@ func SpringChangelog(_, data string) ([]charlie.Release, error) {
 			}
 
 			// Parsing date
-			t, err := time.Parse("2006-01-02", chunks[2])
+			t, err := time.Parse("2006-01-2", chunks[2])
 			if err != nil {
 				return nil, fmt.Errorf(`time parse error line %d - %s`, i+1, err.Error())
 			}
@@ -79,4 +79,9 @@ func SpringChangelog(_, data string) ([]charlie.Release, error) {
 	}
 
 	return result, nil
+}
+
+// SpringChangeLogFileURL builds url for spring project changelog file
+func SpringChangeLogFileURL(projectName string) string {
+	return "https://docs.spring.io/" + projectName + "/docs/current/changelog.txt"
 }
