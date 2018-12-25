@@ -27,7 +27,7 @@ build-only: ## Compile binaries
 build: deps vet test build-only ## Full build - download deps, check code, test and then compile
 
 docker-only: ## Making docker image go-binary
-	docker build . -t charlie-alpine:latest
+	docker-compose up
 
 docker: build docker-only ## Full build + dockerizing final go image
 
