@@ -14,7 +14,7 @@ import (
 /*
 	This is an example of different drivers/parsers configurations being attached to channel
 */
-func run() {
+func main() {
 
 	// Creating channel for incoming requests
 	requests := make(chan string)
@@ -35,9 +35,9 @@ func run() {
 
 	for {
 		request := <-requests
-		fmt.Println("### Processing request for", request)
 		switch {
 		case request == "react":
+			fmt.Println("### Processing request for facebook/react")
 			lastProcessed, found := lastProcessedTimes[request]
 			if !found {
 				lastProcessed = time.Unix(0, 0)
@@ -47,7 +47,7 @@ func run() {
 		case strings.HasPrefix(request, "spring"):
 			bytes, err := http.ReadFile(parse.SpringChangeLogFileURL(request))
 			if err != nil {
-				panic("Could not read release file for " + request)
+				panic(fmt.Sprintf("Could not read release file for %s, error - %s", request, err))
 			}
 			process.GetReleaseProcessor(parse.SpringChangelog, process.PrintToConsole)("", string(bytes))
 		default:
