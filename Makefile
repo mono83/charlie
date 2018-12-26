@@ -19,18 +19,9 @@ vet: ## Code check
 
 build-only: ## Compile binaries
 	mkdir -p ./release/
-	## Needed to build artifact for alpine linux architecture
-	## (all statements should be run in one line in order to use exported environment variables)
-	export GOOS=linux; export GOARCH=amd64; \
-	go build -o ./release/charlie ./charlie/main.go; \
-	go build -o ./release/runner ./runner/runner.go
+	go build -o ./release/charlie ./charlie/main.go
 
 build: deps vet test build-only ## Full build - download deps, check code, test and then compile
-
-docker-only:
-	docker-compose up
-
-docker: build docker-only ## Full build + dockerizing final go image
 
 travis: deps vet test ## Runs all tasks for travis CI
 
