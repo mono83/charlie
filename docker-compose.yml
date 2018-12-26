@@ -2,5 +2,5 @@ version: '3'
 services:
   charlie:
     build: .
-  mysql:
+  db:
     image: "mariadb:latest"
