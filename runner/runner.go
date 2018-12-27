@@ -37,7 +37,6 @@ func main() {
 		request := <-requests
 		switch {
 		case request == "react":
-			fmt.Println("### Processing request for facebook/react")
 			lastProcessed, found := lastProcessedTimes[request]
 			if !found {
 				lastProcessed = time.Unix(0, 0)
