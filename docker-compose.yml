@@ -4,3 +4,11 @@ services:
     build: .
   db:
     image: "mariadb:latest"
+    ports: ["3308:3306"]
+    volumes:
+    - "./db-init:/docker-entrypoint-initdb.d"
+    environment:
+      MYSQL_DATABASE: charlie
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: charlie
+      MYSQL_PASSWORD: charlie
