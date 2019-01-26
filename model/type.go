@@ -1,5 +1,7 @@
 package model
 
+import "strings"
+
 // Type describes issue type
 type Type byte
 
@@ -13,6 +15,7 @@ const (
 	Fixed       Type = 5
 	Security    Type = 6
 	Performance Type = 7
+	Unknown     Type = 126
 	Unreleased  Type = 127
 )
 
@@ -35,5 +38,26 @@ func (t Type) String() string {
 		return "Performance"
 	default:
 		return "Unknown"
+	}
+}
+
+func ParseIssueType(t string) Type {
+	switch strings.ToLower(t) {
+	case "info":
+		return Info
+	case "added":
+		return Added
+	case "changed":
+		return Changed
+	case "deprecated":
+		return Deprecated
+	case "fixed":
+		return Fixed
+	case "security":
+		return Security
+	case "performance":
+		return Performance
+	default:
+		return Unknown
 	}
 }

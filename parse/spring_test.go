@@ -17,7 +17,7 @@ Changes in version 2.0.10.RELEASE (2018-09-10)
 * DATACMNS-1389 - RepositoryConfigurationExtensionSupport.useRepositoryConfiguration(...) fails in strict configuration mode.
 * DATACMNS-1387 - Wrong description for CurrentDateTimeProvider.
 * DATACMNS-1386 - SpringDataWebConfiguration cannot be introspected when Jackson is not available.
-* DATACMNS-1384 - Add support for java.sql.Timestamp in AnnotationRevisionMetadata.
+* DATACMNS-1384 - Add support for java.mysql.Timestamp in AnnotationRevisionMetadata.
 * DATACMNS-1383 - Custom extension of Pageable as parameter causes query method to be rejected.
 * DATACMNS-1376 - Assure JDK 11 compatibility for DefaultMethodInvokingMethodInterceptor.
 * DATACMNS-1375 - In case of failures, AnnotationRepositoryMetadata should be explicit about the offending repository interface.

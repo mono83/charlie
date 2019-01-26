@@ -70,7 +70,7 @@ func SpringChangelog(_, data string) ([]model.Release, error) {
 			issue := Issue(chunks[2], nil)
 			issue.IssueID = chunks[1]
 
-			current.Issues = append(current.Issues, issue)
+			current.Issues = append(current.Issues, &issue)
 		}
 	}
 

@@ -4,8 +4,10 @@ import (
 	"github.com/mono83/charlie/model"
 )
 
-// ProjectRepository represents the projects's repository contract
+// ProjectRepository represents repository contract of Project models
 type ProjectRepository interface {
+	// GetByID returns Project by its database identifier
 	GetByID(id int64) (*model.Project, error)
-	GetByName(title string) (*model.Project, error)
+	// GetByName returns Project by its name
+	GetByName(name string) (*model.Project, error)
 }

@@ -72,7 +72,7 @@ func ReactChangelog(_, data string) ([]model.Release, error) {
 			components = append(components, line.Headers[1])
 		}
 
-		lastRelease.Issues = append(lastRelease.Issues, model.Issue{
+		lastRelease.Issues = append(lastRelease.Issues, &model.Issue{
 			Message:    line.Value,
 			Type:       issueType,
 			Components: components,
