@@ -1,7 +1,7 @@
 package semantic
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 )
 
 // Route detecting type of line
@@ -10,14 +10,14 @@ type Route interface {
 	IsSatisfied(val string) bool
 
 	// GetType returns routed type
-	GetType() *charlie.Type
+	GetType() *model.Type
 
 	// GetRoute Returns next route
 	GetRoute() Route
 }
 
 // Walk walks by semantic rules and returns type
-func Walk(route Route, val string) (*charlie.Type, bool) {
+func Walk(route Route, val string) (*model.Type, bool) {
 	if route == nil {
 		return nil, false
 	}

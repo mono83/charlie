@@ -1,14 +1,14 @@
 package semantic
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"strings"
 )
 
 // ContainsAll must contains all elements
 type ContainsAll struct {
 	And  []string
-	Exit charlie.Type
+	Exit model.Type
 	Next Route
 }
 
@@ -23,7 +23,7 @@ func (c ContainsAll) IsSatisfied(val string) bool {
 }
 
 // GetType returns routed type
-func (c ContainsAll) GetType() *charlie.Type {
+func (c ContainsAll) GetType() *model.Type {
 	return &c.Exit
 }
 

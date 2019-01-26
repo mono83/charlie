@@ -6,17 +6,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 )
 
 var springVersionPattern = regexp.MustCompile(`Changes in version ([\w\d.]+) \(([\w\-]+)\)`)
 var springIssuePattern = regexp.MustCompile(`^\* ([\w\d\-]+) - (.*)$`)
 
 // SpringChangelog parses Spring framework changelog
-func SpringChangelog(_, data string) ([]charlie.Release, error) {
-	var result []charlie.Release
+func SpringChangelog(_, data string) ([]model.Release, error) {
+	var result []model.Release
 
-	var current *charlie.Release
+	var current *model.Release
 	for i, line := range strings.Split(data, "\n") {
 		line = Trim(line)
 
@@ -55,7 +55,7 @@ func SpringChangelog(_, data string) ([]charlie.Release, error) {
 				result = append(result, *current)
 			}
 
-			current = &charlie.Release{Version: *v, Date: t.UTC()}
+			current = &model.Release{Version: *v, Date: t.UTC()}
 
 			continue
 		}
@@ -68,7 +68,7 @@ func SpringChangelog(_, data string) ([]charlie.Release, error) {
 			chunks := springIssuePattern.FindStringSubmatch(line)
 
 			issue := Issue(chunks[2], nil)
-			issue.ID = chunks[1]
+			issue.IssueID = chunks[1]
 
 			current.Issues = append(current.Issues, issue)
 		}

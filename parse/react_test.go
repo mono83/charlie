@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -40,7 +40,7 @@ func TestReactChangelog(t *testing.T) {
 	if assert.NoError(t, err) {
 		assert.Len(t, releases, 2)
 
-		assert.Equal(t, charlie.Version{Major: "16", Minor: "5", Patch: "1", Label: ""}, releases[0].Version)
+		assert.Equal(t, model.Version{Major: "16", Minor: "5", Patch: "1", Label: ""}, releases[0].Version)
 		if assert.Len(t, releases[0].Issues, 7) {
 			assert.Equal(t, []string{"React"}, releases[0].Issues[0].Components)
 			assert.Equal(t, []string{"React DOM"}, releases[0].Issues[1].Components)
@@ -49,10 +49,10 @@ func TestReactChangelog(t *testing.T) {
 
 		summary := releases[0].SummaryType()
 		if assert.Len(t, summary, 4) {
-			assert.Equal(t, 1, summary[charlie.Info])
-			assert.Equal(t, 2, summary[charlie.Added])
-			assert.Equal(t, 1, summary[charlie.Performance])
-			assert.Equal(t, 3, summary[charlie.Fixed])
+			assert.Equal(t, 1, summary[model.Info])
+			assert.Equal(t, 2, summary[model.Added])
+			assert.Equal(t, 1, summary[model.Performance])
+			assert.Equal(t, 3, summary[model.Fixed])
 		}
 
 		date, err := time.Parse("2006-01-02", "2018-09-13")
@@ -60,7 +60,7 @@ func TestReactChangelog(t *testing.T) {
 		assert.Equal(t, date, releases[0].Date)
 
 		// Next release
-		assert.Equal(t, charlie.Version{Major: "16", Minor: "4", Patch: "2", Label: ""}, releases[1].Version)
+		assert.Equal(t, model.Version{Major: "16", Minor: "4", Patch: "2", Label: ""}, releases[1].Version)
 		if assert.Len(t, releases[1].Issues, 2) {
 			assert.Equal(t, []string{"React DOM Server"}, releases[1].Issues[0].Components)
 			assert.Equal(t, []string{"React DOM Server"}, releases[1].Issues[1].Components)
@@ -68,7 +68,7 @@ func TestReactChangelog(t *testing.T) {
 
 		summary = releases[1].SummaryType()
 		if assert.Len(t, summary, 1) {
-			assert.Equal(t, 2, summary[charlie.Fixed])
+			assert.Equal(t, 2, summary[model.Fixed])
 		}
 
 		date, err = time.Parse("2006-01-02", "2018-08-01")

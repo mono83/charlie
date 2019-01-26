@@ -1,10 +1,12 @@
 package semantic
 
-import "github.com/mono83/charlie"
+import (
+	"github.com/mono83/charlie/model"
+)
 
 // AlwaysTrue always true
 type AlwaysTrue struct {
-	Exit charlie.Type
+	Exit model.Type
 }
 
 // IsSatisfied returns true if val is satisfied rules
@@ -13,7 +15,7 @@ func (AlwaysTrue) IsSatisfied(val string) bool {
 }
 
 // GetType returns routed type
-func (a AlwaysTrue) GetType() *charlie.Type {
+func (a AlwaysTrue) GetType() *model.Type {
 	return &a.Exit
 }
 

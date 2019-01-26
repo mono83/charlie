@@ -1,14 +1,14 @@
 package semantic
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"strings"
 )
 
 // ContainsAny must contains any of elements
 type ContainsAny struct {
 	Or   []string
-	Exit charlie.Type
+	Exit model.Type
 	Next Route
 }
 
@@ -23,7 +23,7 @@ func (c ContainsAny) IsSatisfied(val string) bool {
 }
 
 // GetType returns routed type
-func (c ContainsAny) GetType() *charlie.Type {
+func (c ContainsAny) GetType() *model.Type {
 	return &c.Exit
 }
 

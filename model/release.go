@@ -1,10 +1,11 @@
-package charlie
+package model
 
 import "time"
 
 // Release describes whole release data - the name itself,
 // release date and issues
 type Release struct {
+	ID     int64
 	Version
 	Issues []Issue
 	Date   time.Time

@@ -1,13 +1,13 @@
 package parsers
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"github.com/mono83/charlie/parse"
 )
 
 // ParserFunc describes common parsers.
 // It takes title (may be empty) and returns slice of releases
-type ParserFunc func(title, body string) ([]charlie.Release, error)
+type ParserFunc func(title, body string) ([]model.Release, error)
 
 // registeredParsers contains collection of registered parsers
 var registeredParsers map[string]ParserFunc

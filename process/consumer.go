@@ -3,14 +3,14 @@ package process
 import (
 	"bytes"
 	"fmt"
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 )
 
 // ReleaseConsumer accepts Release and performs implementation specific action on it
-type ReleaseConsumer func(release charlie.Release) error
+type ReleaseConsumer func(release model.Release) error
 
 // PrintToConsole is an example of ReleaseConsumer that prints information about release into console
-func PrintToConsole(release charlie.Release) error {
+func PrintToConsole(release model.Release) error {
 
 	var buffer bytes.Buffer
 

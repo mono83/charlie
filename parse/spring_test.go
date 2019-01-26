@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -66,18 +66,18 @@ func TestSpringChangelog(t *testing.T) {
 	logs, err := SpringChangelog("", springLog)
 	if assert.NoError(t, err) {
 		assert.Len(t, logs, 3)
-		assert.Equal(t, charlie.Version{Major: "2", Minor: "0", Patch: "10", Label: "RELEASE"}, logs[0].Version)
+		assert.Equal(t, model.Version{Major: "2", Minor: "0", Patch: "10", Label: "RELEASE"}, logs[0].Version)
 		assert.Equal(t, time.Date(2018, time.September, 10, 0, 0, 0, 0, time.UTC), logs[0].Date)
 
 		if assert.Len(t, logs[0].Issues, 18) {
-			assert.Equal(t, charlie.Info, logs[0].Issues[1].Type)
-			assert.Equal(t, "DATACMNS-1387", logs[0].Issues[1].ID)
+			assert.Equal(t, model.Info, logs[0].Issues[1].Type)
+			assert.Equal(t, "DATACMNS-1387", logs[0].Issues[1].IssueID)
 			assert.Equal(t, "Wrong description for CurrentDateTimeProvider.", logs[0].Issues[1].Message)
 		}
 		assert.Len(t, logs[1].Issues, 6)
 		if assert.Len(t, logs[2].Issues, 15) {
-			assert.Equal(t, charlie.Fixed, logs[2].Issues[14].Type)
-			assert.Equal(t, "DATACMNS-1351", logs[2].Issues[14].ID)
+			assert.Equal(t, model.Fixed, logs[2].Issues[14].Type)
+			assert.Equal(t, "DATACMNS-1351", logs[2].Issues[14].IssueID)
 			assert.Equal(t, "Fix typos in reference documentation.", logs[2].Issues[14].Message)
 		}
 	}

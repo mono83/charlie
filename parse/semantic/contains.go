@@ -1,14 +1,14 @@
 package semantic
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"strings"
 )
 
 // Contains must contains one element
 type Contains struct {
 	Val  string
-	Exit charlie.Type
+	Exit model.Type
 	Next Route
 }
 
@@ -18,7 +18,7 @@ func (c Contains) IsSatisfied(val string) bool {
 }
 
 // GetType returns routed type
-func (c Contains) GetType() *charlie.Type {
+func (c Contains) GetType() *model.Type {
 	return &c.Exit
 }
 

@@ -1,4 +1,4 @@
-package charlie
+package model
 
 // Type describes issue type
 type Type byte

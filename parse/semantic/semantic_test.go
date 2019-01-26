@@ -1,7 +1,7 @@
 package semantic
 
 import (
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,38 +9,38 @@ import (
 var semanticDataProvider = []struct {
 	Data     string
 	Route    Route
-	Expected charlie.Type
+	Expected model.Type
 }{
 	{
 		"* Add something",
-		Contains{Val: "add", Exit: charlie.Performance},
-		charlie.Performance,
+		Contains{Val: "add", Exit: model.Performance},
+		model.Performance,
 	},
 	{
 		" -- FIXED something",
-		Contains{Val: "fix", Exit: charlie.Fixed},
-		charlie.Fixed,
+		Contains{Val: "fix", Exit: model.Fixed},
+		model.Fixed,
 	},
 	{
 		" -- something happened",
 		Contains{
 			Val:  "fix",
-			Exit: charlie.Fixed,
+			Exit: model.Fixed,
 			Next: &Contains{
 				Val:  "add",
-				Exit: charlie.Performance,
-				Next: &AlwaysTrue{Exit: charlie.Info},
+				Exit: model.Performance,
+				Next: &AlwaysTrue{Exit: model.Info},
 			},
 		},
-		charlie.Info,
+		model.Info,
 	},
 	{
 		" -- something happened in this WORLD please fix it",
 		ContainsAll{
 			And:  []string{"fix", "world"},
-			Exit: charlie.Fixed,
+			Exit: model.Fixed,
 		},
-		charlie.Fixed,
+		model.Fixed,
 	},
 }
 

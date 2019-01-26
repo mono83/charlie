@@ -2,7 +2,7 @@ package parse
 
 import (
 	"errors"
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 	"github.com/mono83/charlie/parse/date"
 	"github.com/mono83/charlie/parse/markdown"
 	"github.com/mono83/charlie/parse/semantic"
@@ -11,20 +11,20 @@ import (
 
 var reactSemanticRoute = semantic.ContainsAny{
 	Or:   []string{"fix", "bug"},
-	Exit: charlie.Fixed,
+	Exit: model.Fixed,
 	Next: &semantic.ContainsAny{
 		Or:   []string{"improve", "performance"},
-		Exit: charlie.Performance,
+		Exit: model.Performance,
 		Next: &semantic.ContainsAny{
 			Or:   []string{"add", "provide"},
-			Exit: charlie.Added,
-			Next: &semantic.AlwaysTrue{Exit: charlie.Info},
+			Exit: model.Added,
+			Next: &semantic.AlwaysTrue{Exit: model.Info},
 		},
 	},
 }
 
 // ReactChangelog Parses react change logs
-func ReactChangelog(_, data string) ([]charlie.Release, error) {
+func ReactChangelog(_, data string) ([]model.Release, error) {
 	lines := markdown.ToListLines(data)
 
 	if len(lines) == 0 {
@@ -34,14 +34,14 @@ func ReactChangelog(_, data string) ([]charlie.Release, error) {
 		return nil, errors.New("undefined header lines")
 	}
 
-	var releases []charlie.Release
+	var releases []model.Release
 
-	var lastRelease *charlie.Release
+	var lastRelease *model.Release
 	for _, line := range lines {
 		version, versionDetected := Version(line.Headers[0])
 
 		if lastRelease == nil { // New release
-			lastRelease = &charlie.Release{}
+			lastRelease = &model.Release{}
 			if versionDetected {
 				lastRelease.Version = *version
 			}
@@ -52,16 +52,16 @@ func ReactChangelog(_, data string) ([]charlie.Release, error) {
 			// If new release detected while parsing lines
 			releases = append(releases, *lastRelease)
 			// New release
-			lastRelease = &charlie.Release{Version: *version}
+			lastRelease = &model.Release{Version: *version}
 			if t, parsed := date.Parse(line.Headers[0]); parsed {
 				lastRelease.Date = t
 			}
 		}
 
 		// Detecting type
-		var issueType charlie.Type
+		var issueType model.Type
 		if t, detected := semantic.Walk(reactSemanticRoute, line.Value); !detected || t == nil {
-			issueType = charlie.Info // By default
+			issueType = model.Info // By default
 		} else {
 			issueType = *t
 		}
@@ -72,7 +72,7 @@ func ReactChangelog(_, data string) ([]charlie.Release, error) {
 			components = append(components, line.Headers[1])
 		}
 
-		lastRelease.Issues = append(lastRelease.Issues, charlie.Issue{
+		lastRelease.Issues = append(lastRelease.Issues, model.Issue{
 			Message:    line.Value,
 			Type:       issueType,
 			Components: components,

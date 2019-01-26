@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/mono83/charlie"
+	"github.com/mono83/charlie/model"
 )
 
-func printReleases(releases []charlie.Release) {
+func printReleases(releases []model.Release) {
 	for _, rel := range releases {
 		var name string
 		if !rel.Date.IsZero() {
@@ -25,9 +25,9 @@ func printReleases(releases []charlie.Release) {
 	}
 }
 
-func colorForType(t charlie.Type) *color.Color {
+func colorForType(t model.Type) *color.Color {
 	switch t {
-	case charlie.Fixed:
+	case model.Fixed:
 		return color.New(color.FgYellow)
 	default:
 		return color.New(color.FgGreen)
