@@ -4,7 +4,7 @@ import (
 	"github.com/mono83/charlie/model"
 )
 
-// ReleaseRepository represents repository contract of Release models
+// ReleaseRepository represents repository contract for Release models
 type ReleaseRepository interface {
 	// GetByID returns Release by its database identifier
 	GetByID(id int64) (*model.Release, error)

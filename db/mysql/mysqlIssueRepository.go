@@ -24,6 +24,7 @@ func (r *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*mode
 	defer rows.Close()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	issues := make([]*model.Issue, 0)
@@ -37,7 +38,7 @@ func (r *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*mode
 		issues = append(issues, i)
 		if err != nil {
 			log.Fatal(err)
-			return issues, err
+			return nil, err
 		}
 	}
 

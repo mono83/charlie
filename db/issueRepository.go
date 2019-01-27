@@ -4,7 +4,7 @@ import (
 	"github.com/mono83/charlie/model"
 )
 
-// IssueRepository represents repository contract of Issue models
+// IssueRepository represents repository contract for Issue models
 type IssueRepository interface {
 	// GetByID returns Issue by its database identifier
 	GetByID(id int64) (*model.Issue, error)

@@ -23,6 +23,7 @@ func (r *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*mo
 	defer rows.Close()
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	projects := make([]*model.Project, 0)
@@ -32,7 +33,7 @@ func (r *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*mo
 		projects = append(projects, p)
 		if err != nil {
 			log.Fatal(err)
-			return projects, err
+			return nil, err
 		}
 	}
 

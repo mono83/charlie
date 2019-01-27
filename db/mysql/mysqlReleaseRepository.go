@@ -35,14 +35,14 @@ func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface
 		err := rows.Scan(&r.ID, &r.ProjectID, &v.Major, &v.Minor, &v.Patch, &v.Label, &v.Build, &unixSeconds)
 		if err != nil {
 			log.Fatal(err)
-			return releases, err
+			return nil, err
 		}
 		r.Version = *v
 		r.Date = time.Unix(unixSeconds, 0)
 		issues, err := releaseRepo.IssueRepo.GetByReleaseId(r.ID)
 		if err != nil {
 			log.Fatal(err)
-			return releases, err
+			return nil, err
 		}
 		r.Issues = issues
 		releases = append(releases, r)
