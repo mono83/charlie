@@ -31,7 +31,7 @@ func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface
 	for rows.Next() {
 		r := new(model.Release)
 		v := new(model.Version)
-		var unixSeconds int64 // TODO cannot be null. either add NOT NULL at DB level or let it be nil
+		var unixSeconds int64
 		err := rows.Scan(&r.ID, &r.ProjectID, &v.Major, &v.Minor, &v.Patch, &v.Label, &v.Build, &unixSeconds)
 		if err != nil {
 			log.Fatal(err)
