@@ -34,14 +34,23 @@ func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface
 	releases := make([]*model.Release, 0)
 	for rows.Next() {
 		r := new(model.Release)
-		v := new(model.Version)
 		var unixSeconds int64
-		err := rows.Scan(&r.ID, &r.ProjectID, &v.Major, &v.Minor, &v.Patch, &v.Label, &v.Build, &unixSeconds)
+		var major sql.NullString
+		var minor sql.NullString
+		var patch sql.NullString
+		var label sql.NullString
+		var build sql.NullString
+
+		err := rows.Scan(&r.ID, &r.ProjectID, &major, &minor, &patch, &label, &build, &unixSeconds)
 		if err != nil {
 			log.Fatal(err)
 			return nil, err
 		}
-		r.Version = *v
+		r.Version.Major = major.String
+		r.Version.Minor = minor.String
+		r.Version.Patch = patch.String
+		r.Version.Label = label.String
+		r.Version.Build = build.String
 		r.Date = time.Unix(unixSeconds, 0)
 		issues, err := releaseRepo.IssueRepo.GetByReleaseId(r.ID)
 		if err != nil {

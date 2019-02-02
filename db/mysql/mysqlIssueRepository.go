@@ -29,11 +29,15 @@ func (r *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*mode
 	issues := make([]*model.Issue, 0)
 	for rows.Next() {
 		i := new(model.Issue)
-		var componentsString string
-		var typeString string
-		err := rows.Scan(&i.ID, &i.ReleaseID, &i.IssueID, &typeString, &componentsString, &i.Message)
-		i.Type = model.ParseIssueType(typeString)
-		i.Components = strings.Split(componentsString, ",")
+		var componentsString sql.NullString
+		var message sql.NullString
+		var typeString sql.NullString
+		err := rows.Scan(&i.ID, &i.ReleaseID, &i.IssueID, &typeString, &componentsString, &message)
+		i.Type = model.ParseIssueType(typeString.String)
+		i.Message = message.String
+		if len(componentsString.String) > 0 {
+			i.Components = strings.Split(componentsString.String, ",")
+		}
 		issues = append(issues, i)
 		if err != nil {
 			log.Fatal(err)

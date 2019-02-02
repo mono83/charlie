@@ -28,7 +28,9 @@ func (r *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*mo
 	projects := make([]*model.Project, 0)
 	for rows.Next() {
 		p := new(model.Project)
-		err := rows.Scan(&p.ID, &p.Name, &p.Description)
+		var description sql.NullString
+		err := rows.Scan(&p.ID, &p.Name, &description)
+		p.Description = description.String
 		projects = append(projects, p)
 		if err != nil {
 			log.Fatal(err)
