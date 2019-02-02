@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/mono83/charlie/db"
 	"github.com/mono83/charlie/model"
 	"log"
 	"strings"
@@ -14,7 +13,7 @@ type mysqlIssueRepository struct {
 	Conn *sql.DB
 }
 
-func NewMysqlIssueRepository(Conn *sql.DB) db.IssueRepository {
+func NewMysqlIssueRepository(Conn *sql.DB) *mysqlIssueRepository { // returning implementation instead of interface allows to test private methods
 	return &mysqlIssueRepository{Conn: Conn}
 }
 

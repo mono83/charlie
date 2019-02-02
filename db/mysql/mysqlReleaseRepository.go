@@ -15,7 +15,7 @@ type mysqlReleaseRepository struct {
 	IssueRepo db.IssueRepository
 }
 
-func NewMysqlReleaseRepository(Conn *sql.DB) db.ReleaseRepository {
+func NewMysqlReleaseRepository(Conn *sql.DB) *mysqlReleaseRepository { // returning implementation instead of interface allows to test private methods
 	return &mysqlReleaseRepository{Conn: Conn, IssueRepo: NewMysqlIssueRepository(Conn)}
 }
 
