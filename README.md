@@ -9,3 +9,11 @@ Charlie
 
 Charlie is open-source changelog aggregator.
 Feel free to contribute.
+
+To run project execute
+
+`docker-compose build && docker-compose up -d`
+
+To perform separate steps (e.g. build, test) run Makefile commands like
+
+`make test`
