@@ -19,6 +19,10 @@ func NewMysqlReleaseRepository(Conn *sql.DB) *mysqlReleaseRepository { // return
 	return &mysqlReleaseRepository{Conn: Conn, IssueRepo: NewMysqlIssueRepository(Conn)}
 }
 
+func NewMysqlReleaseRepositoryWithIssueRepo(Conn *sql.DB, IssueRepo db.IssueRepository) *mysqlReleaseRepository { // returning implementation instead of interface allows to test private methods
+	return &mysqlReleaseRepository{Conn: Conn, IssueRepo: IssueRepo}
+}
+
 func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface{}) ([]*model.Release, error) {
 
 	rows, err := releaseRepo.Conn.Query(query, args...)
