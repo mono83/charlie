@@ -7,8 +7,7 @@ import (
 	"github.com/mono83/charlie/parse/markdown"
 	"github.com/mono83/charlie/parse/semantic"
 	"strings"
-	"github.com/mono83/charlie/db/mysql"
-	"github.com/mono83/charlie/config"
+	"github.com/mono83/charlie/db"
 )
 
 var reactSemanticRoute = semantic.ContainsAny{
@@ -26,7 +25,12 @@ var reactSemanticRoute = semantic.ContainsAny{
 }
 
 // ReactChangelog Parses react change logs
-func ReactChangelog(_, data string) ([]model.Release, error) {
+func ReactChangelog(name, data string) ([]model.Release, error) {
+	return ReactChangelogWithProjectRepo(name, data, nil)
+}
+
+// ReactChangelog Parses react change logs
+func ReactChangelogWithProjectRepo(_, data string, projectRepo db.ProjectRepository) ([]model.Release, error) {
 	lines := markdown.ToListLines(data)
 
 	if len(lines) == 0 {
@@ -80,20 +84,16 @@ func ReactChangelog(_, data string) ([]model.Release, error) {
 			Components: components,
 		})
 
-		db, err := config.GetDB()
-
-		if err != nil {
-			return nil, errors.New("error during getting DB Connection")
+		if projectRepo != nil {
+			project, err := projectRepo.GetByName("react")
+			if err != nil {
+				return nil, errors.New("error during getting project `react`")
+			}
+			if project == nil {
+				return nil, errors.New("project `react` not found")
+			}
+			lastRelease.ProjectID = project.ID
 		}
-		projectRepo := mysql.NewMysqlProjectRepository(db)
-		project, err := projectRepo.GetByName("react")
-		if err != nil {
-			return nil, errors.New("error during getting project `react`")
-		}
-		if project == nil {
-			return nil, errors.New("project `react` not found")
-		}
-		lastRelease.ProjectID = project.ID
 	}
 
 	// Last release append
