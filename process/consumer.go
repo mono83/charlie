@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/mono83/charlie/model"
+	"github.com/mono83/charlie/db"
 )
 
 // ReleaseConsumer accepts Release and performs implementation specific action on it
@@ -33,4 +34,11 @@ func PrintToConsole(release model.Release) error {
 	fmt.Println(buffer.String())
 
 	return nil
+}
+
+func DbSaver(releaseRepo db.ReleaseRepository) (func(release model.Release) error) {
+	return func(release model.Release) error {
+		_, err := releaseRepo.Store(release)
+		return err
+	}
 }

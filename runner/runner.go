@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/mono83/charlie/config/ini"
+	"github.com/mono83/charlie/config"
 	"github.com/mono83/charlie/drivers"
 	"github.com/mono83/charlie/http"
 	"github.com/mono83/charlie/parse"
 	"github.com/mono83/charlie/process"
 	"strings"
 	"time"
+	"github.com/mono83/charlie/db/mysql"
 )
 
 /*
@@ -20,18 +22,26 @@ func main() {
 	requests := make(chan string)
 
 	// Imitating requests for changelog processing
-	setPeriodicRequests(requests, 50*time.Second, "react")
-	setPeriodicRequests(requests, 5*time.Second, "spring-data/jpa")
+	setPeriodicRequests(requests, 5*time.Second, "react")
+	setPeriodicRequests(requests, 50*time.Second, "spring-data/jpa")
 	setPeriodicRequests(requests, 12*time.Second, "spring-data/commons")
 
 	// Subscribing processors
-	config, err := ini.GetDefaultConfig()
+	conf, err := ini.GetDefaultConfig()
 	if err != nil {
 		panic("No configuration found")
 	}
 
-	githubDriver := drivers.GithubDriver{Auth: config.Auth.Github}
+	githubDriver := drivers.GithubDriver{Auth: conf.Auth.Github}
 	lastProcessedTimes := make(map[string]time.Time)
+
+	db, err := config.GetDB()
+	defer db.Close()
+	if err != nil {
+		panic("Error during getting DB connection")
+	}
+
+	releaseRepo := mysql.NewMysqlReleaseRepository(db)
 
 	for {
 		request := <-requests
@@ -41,7 +51,11 @@ func main() {
 			if !found {
 				lastProcessed = time.Unix(0, 0)
 			}
-			githubDriver.ApplyToReleasesLastProcessed("facebook/react", process.GetReleaseProcessor(parse.ReactChangelog, process.PrintToConsole), lastProcessed)
+			err := githubDriver.ApplyToReleasesLastProcessed("facebook/react", process.GetReleaseProcessor(parse.ReactChangelog, process.DbSaver(releaseRepo)), lastProcessed)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
 			lastProcessedTimes[request] = time.Now()
 		case strings.HasPrefix(request, "spring"):
 			bytes, err := http.ReadFile(parse.SpringChangeLogFileURL(request))

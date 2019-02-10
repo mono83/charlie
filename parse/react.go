@@ -7,6 +7,8 @@ import (
 	"github.com/mono83/charlie/parse/markdown"
 	"github.com/mono83/charlie/parse/semantic"
 	"strings"
+	"github.com/mono83/charlie/db/mysql"
+	"github.com/mono83/charlie/config"
 )
 
 var reactSemanticRoute = semantic.ContainsAny{
@@ -77,6 +79,21 @@ func ReactChangelog(_, data string) ([]model.Release, error) {
 			Type:       issueType,
 			Components: components,
 		})
+
+		db, err := config.GetDB()
+
+		if err != nil {
+			return nil, errors.New("error during getting DB Connection")
+		}
+		projectRepo := mysql.NewMysqlProjectRepository(db)
+		project, err := projectRepo.GetByName("react")
+		if err != nil {
+			return nil, errors.New("error during getting project `react`")
+		}
+		if project == nil {
+			return nil, errors.New("project `react` not found")
+		}
+		lastRelease.ProjectID = project.ID
 	}
 
 	// Last release append
