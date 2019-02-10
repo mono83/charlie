@@ -16,9 +16,9 @@ func NewMysqlProjectRepository(Conn *sql.DB) *mysqlProjectRepository { // return
 	return &mysqlProjectRepository{Conn: Conn}
 }
 
-func (r *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*model.Project, error) {
+func (repo *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*model.Project, error) {
 
-	rows, err := r.Conn.Query(query, args...)
+	rows, err := repo.Conn.Query(query, args...)
 	defer rows.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -41,25 +41,25 @@ func (r *mysqlProjectRepository) fetch(query string, args ...interface{}) ([]*mo
 	return projects, nil
 }
 
-func (r *mysqlProjectRepository) GetByID(id int64) (*model.Project, error) {
-	projects, err := r.fetch("SELECT id, name, description FROM `project` WHERE id = ?", id)
+func (repo *mysqlProjectRepository) GetByID(id int64) (*model.Project, error) {
+	projects, err := repo.fetch("SELECT id, name, description FROM `project` WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.getSingleResult(projects)
+	return repo.getSingleResult(projects)
 }
 
-func (r *mysqlProjectRepository) GetByName(name string) (*model.Project, error) {
-	projects, err := r.fetch("SELECT id, name, description FROM `project` WHERE name = ?", name)
+func (repo *mysqlProjectRepository) GetByName(name string) (*model.Project, error) {
+	projects, err := repo.fetch("SELECT id, name, description FROM `project` WHERE name = ?", name)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.getSingleResult(projects)
+	return repo.getSingleResult(projects)
 }
 
-func (r *mysqlProjectRepository) getSingleResult(projects []*model.Project) (*model.Project, error) {
+func (repo *mysqlProjectRepository) getSingleResult(projects []*model.Project) (*model.Project, error) {
 	if len(projects) > 1 {
 		return nil, errors.New(fmt.Sprintf("Expected not more than 1 item, but was %d", len(projects)))
 	}

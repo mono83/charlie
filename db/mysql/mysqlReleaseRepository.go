@@ -8,24 +8,26 @@ import (
 	"github.com/mono83/charlie/model"
 	"log"
 	"time"
+	"strconv"
 )
 
 type mysqlReleaseRepository struct {
-	Conn      *sql.DB
-	IssueRepo db.IssueRepository
+	Conn        *sql.DB
+	ProjectRepo db.ProjectRepository
+	IssueRepo   db.IssueRepository
 }
 
 func NewMysqlReleaseRepository(Conn *sql.DB) *mysqlReleaseRepository { // returning implementation instead of interface allows to test private methods
-	return &mysqlReleaseRepository{Conn: Conn, IssueRepo: NewMysqlIssueRepository(Conn)}
+	return &mysqlReleaseRepository{Conn: Conn, ProjectRepo: NewMysqlProjectRepository(Conn), IssueRepo: NewMysqlIssueRepository(Conn)}
 }
 
 func NewMysqlReleaseRepositoryWithIssueRepo(Conn *sql.DB, IssueRepo db.IssueRepository) *mysqlReleaseRepository { // returning implementation instead of interface allows to test private methods
-	return &mysqlReleaseRepository{Conn: Conn, IssueRepo: IssueRepo}
+	return &mysqlReleaseRepository{Conn: Conn, ProjectRepo: NewMysqlProjectRepository(Conn), IssueRepo: IssueRepo}
 }
 
-func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface{}) ([]*model.Release, error) {
+func (repo *mysqlReleaseRepository) fetch(query string, args ...interface{}) ([]*model.Release, error) {
 
-	rows, err := releaseRepo.Conn.Query(query, args...)
+	rows, err := repo.Conn.Query(query, args...)
 	defer rows.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +54,7 @@ func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface
 		r.Version.Label = label.String
 		r.Version.Build = build.String
 		r.Date = time.Unix(unixSeconds, 0)
-		issues, err := releaseRepo.IssueRepo.GetByReleaseId(r.ID)
+		issues, err := repo.IssueRepo.GetByReleaseId(r.ID)
 		if err != nil {
 			log.Fatal(err)
 			return nil, err
@@ -64,17 +66,17 @@ func (releaseRepo *mysqlReleaseRepository) fetch(query string, args ...interface
 	return releases, nil
 }
 
-func (r *mysqlReleaseRepository) GetByID(id int64) (*model.Release, error) {
-	releases, err := r.fetch("SELECT id, project_id, major, minor, patch, label, build, date FROM `release` WHERE id = ?", id)
+func (repo *mysqlReleaseRepository) GetByID(id int64) (*model.Release, error) {
+	releases, err := repo.fetch("SELECT id, project_id, major, minor, patch, label, build, date FROM `release` WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.getSingleRelease(releases)
+	return repo.getSingleRelease(releases)
 }
 
-func (r *mysqlReleaseRepository) GetByProjectID(projectId int64) ([]*model.Release, error) {
-	releases, err := r.fetch("SELECT id, project_id, major, minor, patch, label, build, date FROM `release` WHERE project_id = ?", projectId)
+func (repo *mysqlReleaseRepository) GetByProjectID(projectId int64) ([]*model.Release, error) {
+	releases, err := repo.fetch("SELECT id, project_id, major, minor, patch, label, build, date FROM `release` WHERE project_id = ?", projectId)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +84,7 @@ func (r *mysqlReleaseRepository) GetByProjectID(projectId int64) ([]*model.Relea
 	return releases, nil
 }
 
-func (r *mysqlReleaseRepository) getSingleRelease(releases []*model.Release) (*model.Release, error) {
+func (repo *mysqlReleaseRepository) getSingleRelease(releases []*model.Release) (*model.Release, error) {
 	if len(releases) > 1 {
 		return nil, errors.New(fmt.Sprintf("Expected not more than 1 release, but was %d", len(releases)))
 	}
@@ -91,4 +93,33 @@ func (r *mysqlReleaseRepository) getSingleRelease(releases []*model.Release) (*m
 	}
 
 	return releases[0], nil
+}
+
+func (repo *mysqlReleaseRepository) Store(release model.Release) (int64, error) {
+
+	// Making sure ProjectId is set correctly
+	project, err := repo.ProjectRepo.GetByID(release.ProjectID)
+	if err != nil || project == nil {
+		return 0, errors.New("Project not found by Id " + strconv.FormatInt(release.ProjectID, 10))
+	}
+
+	// Inserting Release into DB and fetching its assigned ID
+	query := "INSERT INTO `release` (`project_id`, `major`, `minor`, `patch`, `label`, `build`, `date`) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	result, err := repo.Conn.Exec(query, release.ProjectID, release.Major, release.Minor, release.Patch, release.Label, release.Build, release.Date.Unix())
+	if err != nil {
+		return 0, err
+	}
+
+	releaseId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	// Setting releaseID to issues and storing them
+	for _, issue := range release.Issues {
+		issue.ReleaseID = releaseId
+	}
+	err = repo.IssueRepo.Store(release.Issues)
+
+	return releaseId, err
 }

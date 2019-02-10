@@ -10,4 +10,6 @@ type ReleaseRepository interface {
 	GetByID(id int64) (*model.Release, error)
 	// GetByProjectID returns Releases by project identifier
 	GetByProjectID(projectId int64) ([]*model.Release, error)
+	// Store persists Release model and returns generated release identifier
+	Store(release model.Release) (int64, error)
 }

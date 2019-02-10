@@ -10,4 +10,7 @@ type IssueRepository interface {
 	GetByID(id int64) (*model.Issue, error)
 	// GetByReleaseId returns Issues by Release identifier
 	GetByReleaseId(releaseId int64) ([]*model.Issue, error)
+	// Store persists Issue model and returns generated issue identifier
+	Store(issues []*model.Issue) (error)
+
 }

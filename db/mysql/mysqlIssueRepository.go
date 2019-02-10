@@ -7,6 +7,7 @@ import (
 	"github.com/mono83/charlie/model"
 	"log"
 	"strings"
+	"strconv"
 )
 
 type mysqlIssueRepository struct {
@@ -17,9 +18,9 @@ func NewMysqlIssueRepository(Conn *sql.DB) *mysqlIssueRepository { // returning 
 	return &mysqlIssueRepository{Conn: Conn}
 }
 
-func (r *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*model.Issue, error) {
+func (repo *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*model.Issue, error) {
 
-	rows, err := r.Conn.Query(query, args...)
+	rows, err := repo.Conn.Query(query, args...)
 	defer rows.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -48,17 +49,17 @@ func (r *mysqlIssueRepository) fetch(query string, args ...interface{}) ([]*mode
 	return issues, nil
 }
 
-func (r *mysqlIssueRepository) GetByID(id int64) (*model.Issue, error) {
-	issues, err := r.fetch("SELECT id, release_id, issue_id, type, components, message FROM `issue` WHERE id = ?", id)
+func (repo *mysqlIssueRepository) GetByID(id int64) (*model.Issue, error) {
+	issues, err := repo.fetch("SELECT id, release_id, issue_id, type, components, message FROM `issue` WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.getSingleResult(issues)
+	return repo.getSingleResult(issues)
 }
 
-func (r *mysqlIssueRepository) GetByReleaseId(releaseId int64) ([]*model.Issue, error) {
-	issues, err := r.fetch("SELECT id, release_id, issue_id, type, components, message FROM `issue` WHERE release_id = ?", releaseId)
+func (repo *mysqlIssueRepository) GetByReleaseId(releaseId int64) ([]*model.Issue, error) {
+	issues, err := repo.fetch("SELECT id, release_id, issue_id, type, components, message FROM `issue` WHERE release_id = ?", releaseId)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (r *mysqlIssueRepository) GetByReleaseId(releaseId int64) ([]*model.Issue, 
 	return issues, nil
 }
 
-func (r *mysqlIssueRepository) getSingleResult(issues []*model.Issue) (*model.Issue, error) {
+func (repo *mysqlIssueRepository) getSingleResult(issues []*model.Issue) (*model.Issue, error) {
 	if len(issues) > 1 {
 		return nil, errors.New(fmt.Sprintf("Expected not more than 1 issue, but was %d", len(issues)))
 	}
@@ -75,4 +76,29 @@ func (r *mysqlIssueRepository) getSingleResult(issues []*model.Issue) (*model.Is
 	}
 
 	return issues[0], nil
+}
+
+func (repo *mysqlIssueRepository) Store(issues []*model.Issue) (error) {
+
+	insertQuery := "INSERT INTO `issue` (`release_id`, `issue_id`, `type`, `components`, `message`) VALUES "
+
+	placeHolders := make([]string, 0)
+	args := make([]interface{}, 0)
+	for i := 0; i < len(issues); i++ {
+		// Placeholders
+		placeHolders = append(placeHolders, "(?, ?, ?, ?, ?)")
+
+		// Arguments
+		args = append(args, strconv.FormatInt(issues[i].ReleaseID, 10))
+		args = append(args, issues[i].IssueID)
+		args = append(args, issues[i].Type.String())
+		args = append(args, strings.Join(issues[i].Components, ","))
+		args = append(args, issues[i].Message)
+	}
+
+	query := insertQuery + strings.Join(placeHolders, ",")
+
+	_, err := repo.Conn.Exec(query, args...)
+
+	return err
 }
